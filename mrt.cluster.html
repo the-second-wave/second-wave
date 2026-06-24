@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Map Of Remaining Time</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<style>
+
+body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:24px;background:#f7f4ee;color:#0b1f3a}
+...
+h1{text-align:center;font-size:42px;letter-spacing:2px;margin-bottom:6px}
+.subtitle{text-align:center;max-width:850px;margin:0 auto 25px auto;line-height:1.5}
+.wrap{overflow:auto;background:white;padding:14px;border-radius:10px;border:1px solid #ccc}
+.controls{text-align:center;margin:14px 0}
+button{background:#082244;color:white;padding:10px 16px;border:0;border-radius:5px;font-weight:bold;cursor:pointer;margin:4px}
+.zoomArea{transform-origin:top left;transition:transform .15s ease}
+table{border-collapse:collapse;width:100%;min-width:1180px;font-size:12px}
+th{background:#082244;color:white;padding:6px}
+td{border:1px solid #ddd;height:38px;text-align:center;padding:3px}
+.year,.age{background:#f1f1f1;font-weight:bold}
+.past{background:#d9d9d9}
+.future{background:#cfead4}
+.later{background:#ffe9a8}
+.now{background:#d93a32;color:white;font-weight:bold}
+.life{background:#ffe16a;font-weight:bold}
+.achievement{background:#7db7e8;font-weight:bold}
+.decade{background:#8e63c7;color:white;font-weight:bold}
+.loss{background:#8b8b8b;color:white;font-weight:bold}
+.celebration{background:#f4a261;font-weight:bold}
+.unplanned{background:#222;color:white}
+.comments{text-align:left;background:#fafafa;min-width:220px}
+.hideNotes .comments,.hideNotes .commentsHeader{display:none}
+.legend{text-align:center;margin:18px 0;line-height:1.8}
+.tip{text-align:center;font-size:14px;color:#555}
+hr{margin:32px 0}
+input,select{padding:8px;margin:5px}
+.eventList{max-width:900px;margin:10px auto;text-align:left;background:white;border:1px solid #ddd;border-radius:8px;padding:12px}
+.eventRow{display:flex;align-items:center;gap:10px;padding:7px;border-bottom:1px solid #eee}
+.eventColour{width:18px;height:18px;border-radius:4px;display:inline-block}
+.eventDate{width:95px;font-weight:bold}
+.eventName{flex:1}
+.eventDelete{background:#eee;color:#222;padding:5px 8px}
+.saveNote{text-align:center;font-size:13px;color:#555}
+</style>
+</head>
+
+<body>
+
+<h1>MAP OF REMAINING TIME</h1>
+
+<p class="subtitle">
+<b>MRT is not a prediction.</b> It is a way to visualise where a life has been,
+where it currently stands, and how quickly the active years ahead may narrow.
+</p>
+
+<h2>Example: Sam</h2>
+
+<p>
+<b>Born:</b> 1 July 1966 &nbsp; | &nbsp;
+<b>You are here:</b> June 2026 &nbsp; | &nbsp;
+<b>Assumed lifespan:</b> 85
+</p>
+
+<"legend">
+⬜ Lived &nbsp;&nbsp;
+🟥 You are here &nbsp;&nbsp;
+🟩 Active years &nbsp;&nbsp;
+🟨 Amber years &nbsp;&nbsp;
+🟨 Life event &nbsp;&nbsp;
+🟦 Achievement &nbsp;&nbsp;
+🟪 Decade birthday &nbsp;&nbsp;
+🟧 Celebration &nbsp;&nbsp;
+⬛ Beyond assumption
+</div>
+
+<p class="tip">
+Start with <b>Fit Whole Map</b> to compare years already lived, active years remaining,
+and amber years that may still be enjoyed, albeit often with greater limitations.
+</p>
+
+<"controls">
+<button onclick="zoomMap('sam',-0.1)">− Zoom Out</button>
+<button onclick="resetMap('sam')">Reset</button>
+<button onclick="zoomMap('sam',0.1)">+ Zoom In</button>
+<button id="samNotesBtn" onclick="toggleNotes('sam')">Show Notes</button>
+</div>
+
+<"wrap" id="samWrap">
+<div id="samZoom" class="zoomArea hideNotes">
+<table id="samTable"></table>
+</div>
+</div>
+
+<hr>
+
+<h2>Create Your MRT</h2>
+
+<p class="tip">
+Enter your details, add your own events, then generate your MRT. Nothing is saved online.
+</p>
+
+<p class="saveNote">Your MRT automatically saves on this device and browser.</p>
+
+<div class="controls">
+Date of birth:
+<input type="date" id="userDob" value="1966-07-01">
+
+Current date:
+<input type="date" id="userCurrentDate" value="2026-06-01">
+
+Assumed lifespan:
+<input type="number" id="userLifespan" value="85">
+
+Amber years begin:
+<input type="number" id="userAmberAge" value="75">
+
+<button onclick="buildUserMRT()">Generate My MRT</button>
+</div>
+
+<h3 style="text-align:center;">Add Events To Your MRT</h3>
+
+<div class="controls">
+Year:
+<input type="number" id="eventYear" value="2028">
+
+Month:
+<select id="eventMonth">
+<option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option>
+<option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option>
+<option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option>
+<option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+</select>
+
+Event:
+<input type="text" id="eventText" value="Retirement">
+
+Type:
+<select id="eventType">
+<option value="life">Life event</option>
+<option value="achievement">Achievement</option>
+<option value="loss">Loss</option>
+<option value="celebration">Celebration</option>
+<option value="decade">Birthday</option>
+</select>
+
+Comment:
+<input type="text" id="eventComment" value="A new chapter">
+
+<button onclick="addUserEvent()">Add Event</button>
+</div>
+
+<div class="eventList" id="eventList"></div>
+
+<div class="controls">
+<button onclick="zoomMap('user',-0.1)">− Zoom Out</button>
+<button onclick="resetMap('user')">Reset</button>
+<button onclick="zoomMap('user',0.1)">+ Zoom In</button>
+<button id="userNotesBtn" onclick="toggleNotes('user')">Show Notes</button>
+<button onclick="downloadMRT()">📷 Download MRT</button>
+</div>
+
+<div class="wrap" id="userWrap">
+<div id="userZoom" class="zoomArea hideNotes">
+<table id="userTable"></table>
+</div>
+</div>
+
+<script>
+const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+let userEvents = [];
+
+const maps = {
+  sam:{zoom:1,notes:false,wrap:"samWrap",area:"samZoom",table:"samTable",button:"samNotesBtn"},
+  user:{zoom:1,notes:false,wrap:"userWrap",area:"userZoom",table:"userTable",button:"userNotesBtn"}
+};
+
+function saveMRT(){
+  localStorage.setItem("MRT_Events", JSON.stringify(userEvents));
+  localStorage.setItem("MRT_DOB", document.getElementById("userDob").value);
+  localStorage.setItem("MRT_Current", document.getElementById("userCurrentDate").value);
+  localStorage.setItem("MRT_Lifespan", document.getElementById("userLifespan").value);
+  localStorage.setItem("MRT_Amber", document.getElementById("userAmberAge").value);
+}
+
+function loadMRT(){
+  const savedEvents = localStorage.getItem("MRT_Events");
+  if(savedEvents){
+    try{ userEvents = JSON.parse(savedEvents) || []; }
+    catch(e){ userEvents = []; }
+  }
+
+  const dob = localStorage.getItem("MRT_DOB");
+  const current = localStorage.getItem("MRT_Current");
+  const lifespan = localStorage.getItem("MRT_Lifespan");
+  const amber = localStorage.getItem("MRT_Amber");
+
+  if(dob) document.getElementById("userDob").value = dob;
+  if(current) document.getElementById("userCurrentDate").value = current;
+  if(lifespan) document.getElementById("userLifespan").value = lifespan;
+  if(amber) document.getElementById("userAmberAge").value = amber;
+}
+
+function applyZoom(which){
+  const map = maps[which];
+  const area = document.getElementById(map.area);
+  const wrap = document.getElementById(map.wrap);
+
+  area.style.transform = `scale(${map.zoom})`;
+  area.style.width = `${100 / map.zoom}%`;
+
+  setTimeout(function(){
+    wrap.style.height = (area.scrollHeight * map.zoom + 34) + "px";
+  },50);
+}
+
+function zoomMap(which,amount){
+  maps[which].zoom = Math.max(0.18, Math.min(2, maps[which].zoom + amount));
+  applyZoom(which);
+}
+
+function resetMap(which){
+  fitMap(which);
+}
+}
+
+function fitMap(which){
+  const map = maps[which];
+  const wrap = document.getElementById(map.wrap);
+  const table = document.getElementById(map.table);
+  const wrapWidth = wrap.clientWidth - 10;
+  const tableWidth = table.scrollWidth;
+
+  map.zoom = Math.max(0.18, Math.min(1, wrapWidth / tableWidth));
+  applyZoom(which);
+  wrap.scrollLeft = 0;
+}
+
+function toggleNotes(which){
+  const map = maps[which];
+  const area = document.getElementById(map.area);
+  const btn = document.getElementById(map.button);
+
+  map.notes = !map.notes;
+
+  if(map.notes){
+    area.classList.remove("hideNotes");
+    btn.innerText = "Hide Notes";
+  }else{
+    area.classList.add("hideNotes");
+    btn.innerText = "Show Notes";
+  }
+
+  setTimeout(function(){fitMap(which)},100);
+}
+
+function header(){
+  let html = "<tr><th>YEAR</th><th>AGE</th>";
+  months.forEach(m => html += `<th>${m}</th>`);
+  html += "<th class='commentsHeader'>COMMENTS / NOTES</th></tr>";
+  return html;
+}
+
+const samEvents = {
+"1966-7": {text:"Born", type:"life"},
+"1970-2": {text:"Started<br>School", type:"life"},
+"1976-7": {text:"10th<br>Birthday", type:"decade"},
+"1981-7": {text:"First<br>Kiss 💋", type:"life"},
+"1984-12": {text:"Finished<br>School", type:"achievement"},
+"1985-9": {text:"First<br>Car 🚗", type:"life"},
+"1986-3": {text:"First<br>Job", type:"achievement"},
+"1986-7": {text:"20th<br>Birthday", type:"decade"},
+"1989-5": {text:"Backpacked<br>Overseas", type:"life"},
+"1991-8": {text:"Met<br>Partner ❤️", type:"life"},
+"1991-11": {text:"Changed<br>Job", type:"achievement"},
+"1995-11": {text:"Married", type:"life"},
+"1996-7": {text:"30th<br>Birthday", type:"decade"},
+"1998-8": {text:"Bought<br>House", type:"life"},
+"1999-2": {text:"Mum's<br>Funeral", type:"loss"},
+"2001-6": {text:"Daughter<br>Born", type:"life"},
+"2003-10": {text:"Marathon", type:"achievement"},
+"2004-1": {text:"Son<br>Born", type:"life"},
+"2006-7": {text:"40th<br>Birthday", type:"decade"},
+"2007-4": {text:"Timmy<br>Arrives 🐕", type:"life"},
+"2010-6": {text:"1000 Mile<br>Hike", type:"achievement"},
+"2014-5": {text:"Sold<br>House", type:"life"},
+"2015-2": {text:"Bought<br>Larger<br>House", type:"life"},
+"2016-7": {text:"50th<br>Birthday", type:"decade"},
+"2018-9": {text:"Promotion", type:"achievement"},
+"2021-8": {text:"Timmy<br>Passes", type:"loss"},
+"2024-11": {text:"Europe<br>Trip", type:"life"},
+"2025-9": {text:"Team Won<br>Championship", type:"celebration"},
+"2026-5": {text:"Mortgage<br>Paid Off", type:"achievement"},
+"2026-6": {text:"YOU ARE<br>HERE", type:"now"},
+"2026-7": {text:"60th<br>Birthday", type:"decade"},
+"2028-7": {text:"Retirement", type:"life"},
+"2032-5": {text:"Europe<br>Trip", type:"life"},
+"2035-2": {text:"Cruise 🚢", type:"life"},
+"2036-7": {text:"70th<br>Birthday", type:"decade"},
+"2046-7": {text:"80th<br>Birthday", type:"decade"},
+"2051-7": {text:"85", type:"decade"}
+};
+
+const samComments = {
+1966:"Birth year.",1970:"School begins.",1976:"Double digits.",1981:"Early memories.",
+1984:"School complete.",1985:"First taste of independence.",1986:"Work begins.",
+1989:"Travel and freedom.",1991:"Life starts changing direction.",1995:"Major life moment.",
+1998:"Mortgage begins.",1999:"A difficult year.",2001:"Family grows.",
+2003:"Big personal goal.",2004:"Family grows again.",2006:"Forty.",
+2007:"Timmy arrives.",2010:"Bucket list completed.",2014:"Needed more space.",
+2015:"Larger family home.",2016:"Half a century.",2018:"Career step.",
+2021:"Goodbye Timmy.",2024:"Long-awaited trip.",2025:"A rare sporting joy.",
+2026:"Current point. Mortgage cleared. Turning 60.",2028:"Retirement assumption.",
+2032:"Possible major trip.",2035:"Possible cruise.",2036:"Milestone.",
+2046:"Milestone.",2051:"Assumed lifespan."
+};
+
+function buildSam(){
+  let html = header();
+
+  for(let year=1966; year<=2051; year++){
+    let age = year - 1966;
+    html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
+
+    for(let m=1; m<=12; m++){
+      let key = `${year}-${m}`;
+      let cls = "future";
+      let text = "";
+
+      if(year < 2026 || (year === 2026 && m < 6)) cls = "past";
+      else if(year < 2041) cls = "future";
+      else if(year <= 2051) cls = "later";
+
+      if(year === 2026 && m === 6) cls = "now";
+      if(year > 2051 || (year === 2051 && m > 7)) cls = "unplanned";
+
+      if(samEvents[key]){
+        text = samEvents[key].text;
+        cls = samEvents[key].type;
+      }
+
+      html += `<td class="${cls}">${text}</td>`;
+    }
+
+    html += `<td class="comments">${samComments[year] || ""}</td></tr>`;
+  }
+
+  document.getElementById("samTable").innerHTML = html;
+  setTimeout(function(){fitMap("sam")},200);
+}
+
+function addUserEvent(){
+  userEvents.push({
+    year:parseInt(document.getElementById("eventYear").value),
+    month:parseInt(document.getElementById("eventMonth").value),
+    text:document.getElementById("eventText").value,
+    type:document.getElementById("eventType").value,
+    comment:document.getElementById("eventComment").value
+  });
+
+  renderUserEvents();
+  buildUserMRT();
+  saveMRT();
+}
+
+function deleteUserEvent(index){
+  userEvents.splice(index,1);
+  renderUserEvents();
+  buildUserMRT();
+  saveMRT();
+}
+
+function renderUserEvents(){
+  let html = "<b>Added Events:</b><br>";
+
+  if(userEvents.length === 0){
+    html += "No custom events added yet.";
+  }else{
+    userEvents.forEach(function(e,i){
+      html += `
+        <div class="eventRow">
+          <span class="eventColour ${e.type}"></span>
+          <span class="eventDate">${months[e.month-1]} ${e.year}</span>
+          <span class="eventName">${e.text}</span>
+          <button class="eventDelete" onclick="deleteUserEvent(${i})">❌</button>
+        </div>
+      `;
+    });
+  }
+
+  document.getElementById("eventList").innerHTML = html;
+}
+
+function buildUserMRT(){
+  const dob = new Date(document.getElementById("userDob").value);
+  const current = new Date(document.getElementById("userCurrentDate").value);
+  const lifespan = parseInt(document.getElementById("userLifespan").value);
+  const amberAge = parseInt(document.getElementById("userAmberAge").value);
+
+  const birthYear = dob.getFullYear();
+  const birthMonth = dob.getMonth() + 1;
+  const currentYear = current.getFullYear();
+  const currentMonth = current.getMonth() + 1;
+  const endYear = birthYear + lifespan;
+  const amberYear = birthYear + amberAge;
+
+  let html = header();
+
+  for(let year=birthYear; year<=endYear; year++){
+    let age = year - birthYear;
+    html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
+
+    for(let m=1; m<=12; m++){
+      let cls = "future";
+      let text = "";
+
+      if(year < currentYear || (year === currentYear && m < currentMonth)) cls = "past";
+      else if(year < amberYear) cls = "future";
+      else cls = "later";
+
+      if(year === currentYear && m === currentMonth){
+        cls = "now";
+        text = "YOU ARE<br>HERE";
+      }
+
+      if(year === birthYear && m === birthMonth){
+        cls = "life";
+        text = "Born";
+      }
+
+      if(age > 0 && age % 10 === 0 && m === birthMonth){
+        cls = "decade";
+        text = age + "th<br>Birthday";
+      }
+
+      const custom = userEvents.find(e => e.year === year && e.month === m);
+
+      if(custom && cls !== "now"){
+        cls = custom.type;
+        text = custom.text.replace(/ /g,"<br>");
+      }
+
+      if(year === endYear && m === birthMonth){
+        cls = "unplanned";
+        text = lifespan;
+      }
+
+      html += `<td class="${cls}">${text}</td>`;
+    }
+
+    let notes = [];
+
+    if(year === birthYear) notes.push("Birth year.");
+    if(year === currentYear) notes.push("Current point.");
+    if(year === amberYear) notes.push("Amber years begin.");
+    if(year === endYear) notes.push("Assumed lifespan.");
+
+    userEvents
+      .filter(e => e.year === year && e.comment)
+      .forEach(e => notes.push(e.text + ": " + e.comment));
+
+    html += `<td class="comments">${notes.join("<br>")}</td></tr>`;
+  }
+
+  document.getElementById("userTable").innerHTML = html;
+  setTimeout(function(){fitMap("user")},200);
+  saveMRT();
+}
+
+buildSam();
+loadMRT();
+renderUserEvents();
+buildUserMRT();
+function downloadMRT(){
+
+const oldZoom = maps.user.zoom;
+
+maps.user.zoom = 1;
+
+applyZoom('user');
+
+setTimeout(()=>{
+
+html2canvas(
+document.getElementById("userWrap")
+).then(canvas=>{
+
+const link =
+document.createElement('a');
+
+link.download = "MRT.png";
+
+link.href =
+canvas.toDataURL();
+
+link.click();
+
+maps.user.zoom = oldZoom;
+
+applyZoom('user');
+
+});
+
+},300);
+
+}
+window.addEventListener("resize",function(){
+  fitMap("sam");
+  fitMap("user");
+});
+</script>
+
+</body>
+</html>
