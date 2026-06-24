@@ -348,6 +348,152 @@ window.addEventListener("resize",function(){
   fitMap("user");
 });
 </script>
+<hr style="margin:32px 0;">
 
+<h2>Add Events To Your MRT</h2>
+
+<div class="controls">
+Year:
+<input type="number" id="eventYear" value="2028">
+
+Month:
+<select id="eventMonth">
+  <option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option>
+  <option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option>
+  <option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option>
+  <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+</select>
+
+Event:
+<input type="text" id="eventText" value="Retirement">
+
+Type:
+<select id="eventType">
+  <option value="life">Life event</option>
+  <option value="achievement">Achievement</option>
+  <option value="loss">Loss</option>
+  <option value="celebration">Celebration</option>
+  <option value="decade">Birthday</option>
+</select>
+
+Comment:
+<input type="text" id="eventComment" value="A new chapter">
+
+<button onclick="addUserEvent()">Add Event</button>
+</div>
+
+<div class="controls" id="eventList"></div>
+
+<script>
+let userEvents = [];
+
+function addUserEvent(){
+  userEvents.push({
+    year: parseInt(document.getElementById("eventYear").value),
+    month: parseInt(document.getElementById("eventMonth").value),
+    text: document.getElementById("eventText").value,
+    type: document.getElementById("eventType").value,
+    comment: document.getElementById("eventComment").value
+  });
+
+  renderUserEvents();
+  buildUserMRT();
+}
+
+function renderUserEvents(){
+  let html = "<b>Added Events:</b><br>";
+
+  userEvents.forEach(function(e,i){
+    html += `${e.year} / ${e.month} — ${e.text} 
+    <button onclick="deleteUserEvent(${i})">Delete</button><br>`;
+  });
+
+  document.getElementById("eventList").innerHTML = html;
+}
+
+function deleteUserEvent(index){
+  userEvents.splice(index,1);
+  renderUserEvents();
+  buildUserMRT();
+}
+
+function buildUserMRT(){
+  const dob = new Date(document.getElementById("userDob").value);
+  const current = new Date(document.getElementById("userCurrentDate").value);
+  const lifespan = parseInt(document.getElementById("userLifespan").value);
+  const amberAge = parseInt(document.getElementById("userAmberAge").value);
+
+  const birthYear = dob.getFullYear();
+  const birthMonth = dob.getMonth() + 1;
+  const currentYear = current.getFullYear();
+  const currentMonth = current.getMonth() + 1;
+  const endYear = birthYear + lifespan;
+  const amberYear = birthYear + amberAge;
+
+  let html = header();
+
+  for(let year=birthYear; year<=endYear; year++){
+    let age = year - birthYear;
+    html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
+
+    for(let m=1; m<=12; m++){
+      let cls = "future";
+      let text = "";
+
+      if(year < currentYear || (year === currentYear && m < currentMonth)) cls = "past";
+      else if(year < amberYear) cls = "future";
+      else cls = "later";
+
+      if(year === currentYear && m === currentMonth){
+        cls = "now";
+        text = "YOU ARE<br>HERE";
+      }
+
+      if(year === birthYear && m === birthMonth){
+        cls = "life";
+        text = "Born";
+      }
+
+      if(age > 0 && age % 10 === 0 && m === birthMonth){
+        cls = "decade";
+        text = age + "th<br>Birthday";
+      }
+
+      const custom = userEvents.find(e => e.year === year && e.month === m);
+
+      if(custom && cls !== "now"){
+        cls = custom.type;
+        text = custom.text.replace(/ /g,"<br>");
+      }
+
+      if(year === endYear && m === birthMonth){
+        cls = "unplanned";
+        text = lifespan;
+      }
+
+      html += `<td class="${cls}">${text}</td>`;
+    }
+
+    let notes = [];
+
+    if(year === birthYear) notes.push("Birth year.");
+    if(year === currentYear) notes.push("Current point.");
+    if(year === amberYear) notes.push("Amber years begin.");
+    if(year === endYear) notes.push("Assumed lifespan.");
+
+    userEvents
+      .filter(e => e.year === year && e.comment)
+      .forEach(e => notes.push(e.text + ": " + e.comment));
+
+    html += `<td class="comments">${notes.join("<br>")}</td></tr>`;
+  }
+
+  document.getElementById("userTable").innerHTML = html;
+  setTimeout(function(){fitMap("user")},200);
+}
+
+renderUserEvents();
+buildUserMRT();
+</script>
 </body>
 </html>
