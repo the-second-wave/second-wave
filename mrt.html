@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>Map Of Remaining Time</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
 <style>
+
 body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:24px;background:#f7f4ee;color:#0b1f3a}
+...
 h1{text-align:center;font-size:42px;letter-spacing:2px;margin-bottom:6px}
 .subtitle{text-align:center;max-width:850px;margin:0 auto 25px auto;line-height:1.5}
 .wrap{overflow:auto;background:white;padding:14px;border-radius:10px;border:1px solid #ccc}
@@ -59,7 +65,7 @@ where it currently stands, and how quickly the active years ahead may narrow.
 <b>Assumed lifespan:</b> 85
 </p>
 
-<div class="legend">
+<"legend">
 ⬜ Lived &nbsp;&nbsp;
 🟥 You are here &nbsp;&nbsp;
 🟩 Active years &nbsp;&nbsp;
@@ -76,7 +82,7 @@ Start with <b>Fit Whole Map</b> to compare years already lived, active years rem
 and amber years that may still be enjoyed, albeit often with greater limitations.
 </p>
 
-<div class="controls">
+<"controls">
 <button onclick="zoomMap('sam',-0.1)">− Zoom Out</button>
 <button onclick="resetMap('sam')">Reset</button>
 <button onclick="zoomMap('sam',0.1)">+ Zoom In</button>
@@ -84,7 +90,7 @@ and amber years that may still be enjoyed, albeit often with greater limitations
 <button id="samNotesBtn" onclick="toggleNotes('sam')">Show Notes</button>
 </div>
 
-<div class="wrap" id="samWrap">
+<"wrap" id="samWrap">
 <div id="samZoom" class="zoomArea hideNotes">
 <table id="samTable"></table>
 </div>
@@ -152,6 +158,11 @@ Comment:
 
 <div class="controls">
 <button onclick="zoomMap('user',-0.1)">− Zoom Out</button>
+<div class="controls">
+<button onclick="downloadMRT()">
+📷 Download My MRT
+</button>
+</div>  
 <button onclick="resetMap('user')">Reset</button>
 <button onclick="zoomMap('user',0.1)">+ Zoom In</button>
 <button onclick="fitMap('user')">Fit My MRT</button>
@@ -470,7 +481,39 @@ buildSam();
 loadMRT();
 renderUserEvents();
 buildUserMRT();
+function downloadMRT(){
 
+const oldZoom = maps.user.zoom;
+
+maps.user.zoom = 1;
+
+applyZoom('user');
+
+setTimeout(()=>{
+
+html2canvas(
+document.getElementById("userWrap")
+).then(canvas=>{
+
+const link =
+document.createElement('a');
+
+link.download = "MRT.png";
+
+link.href =
+canvas.toDataURL();
+
+link.click();
+
+maps.user.zoom = oldZoom;
+
+applyZoom('user');
+
+});
+
+},300);
+
+}
 window.addEventListener("resize",function(){
   fitMap("sam");
   fitMap("user");
