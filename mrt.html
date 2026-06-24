@@ -251,7 +251,7 @@ function buildSam(){
 buildSam();
 window.addEventListener("resize", fitWholeMap);
 </script>
-<hr style="margin:40px 0;">
+<hr style="margin:28px 0;">
 
 <h2>Create Your MRT</h2>
 
@@ -275,13 +275,81 @@ Enter your details to generate a blank MRT. Nothing is saved.
   <button onclick="buildUserMRT()">Generate My MRT</button>
 </div>
 
+<div class="controls">
+  <button onclick="userZoomOut()">− Zoom Out</button>
+  <button onclick="userResetZoom()">Reset</button>
+  <button onclick="userZoomIn()">+ Zoom In</button>
+  <button onclick="fitUserMap()">Fit My MRT</button>
+  <button onclick="toggleUserNotes()">Show Notes</button>
+</div>
+
 <div class="wrap" id="userMapWrap">
-  <div id="userZoomArea">
+  <div id="userZoomArea" class="hideNotes">
     <table id="userTable"></table>
   </div>
 </div>
 
 <script>
+let userZoomLevel = 1;
+let userNotesVisible = false;
+
+function applyUserZoom(){
+  const area = document.getElementById("userZoomArea");
+  const wrap = document.getElementById("userMapWrap");
+
+  area.style.transform = `scale(${userZoomLevel})`;
+  area.style.width = `${100 / userZoomLevel}%`;
+
+  setTimeout(() => {
+    const visibleHeight = area.scrollHeight * userZoomLevel;
+    wrap.style.height = (visibleHeight + 32) + "px";
+  }, 50);
+}
+
+function userZoomIn(){
+  userZoomLevel = Math.min(2, userZoomLevel + 0.1);
+  applyUserZoom();
+}
+
+function userZoomOut(){
+  userZoomLevel = Math.max(0.18, userZoomLevel - 0.1);
+  applyUserZoom();
+}
+
+function userResetZoom(){
+  userZoomLevel = 1;
+  applyUserZoom();
+}
+
+function fitUserMap(){
+  const wrap = document.getElementById("userMapWrap");
+  const table = document.getElementById("userTable");
+  const wrapWidth = wrap.clientWidth - 10;
+  const tableWidth = table.scrollWidth;
+
+  userZoomLevel = Math.max(0.18, Math.min(1, wrapWidth / tableWidth));
+
+  applyUserZoom();
+  wrap.scrollLeft = 0;
+}
+
+function toggleUserNotes(){
+  const area = document.getElementById("userZoomArea");
+  const btn = event.target;
+
+  userNotesVisible = !userNotesVisible;
+
+  if(userNotesVisible){
+    area.classList.remove("hideNotes");
+    btn.innerText = "Hide Notes";
+  }else{
+    area.classList.add("hideNotes");
+    btn.innerText = "Show Notes";
+  }
+
+  setTimeout(fitUserMap,100);
+}
+
 function buildUserMRT(){
   const dob = new Date(document.getElementById("userDob").value);
   const current = new Date(document.getElementById("userCurrentDate").value);
@@ -347,9 +415,9 @@ function buildUserMRT(){
   }
 
   document.getElementById("userTable").innerHTML = html;
+  setTimeout(fitUserMap,150);
 }
 
 buildUserMRT();
+window.addEventListener("resize", fitUserMap);
 </script>
-</body>
-</html>
