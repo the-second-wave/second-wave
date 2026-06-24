@@ -5,113 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{
-  font-family: Arial, Helvetica, sans-serif;
-  margin:0;
-  padding:24px;
-  background:#f7f4ee;
-  color:#0b1f3a;
-}
-
-h1{
-  text-align:center;
-  font-size:42px;
-  letter-spacing:2px;
-  margin-bottom:6px;
-}
-
-.subtitle{
-  text-align:center;
-  max-width:850px;
-  margin:0 auto 25px auto;
-  line-height:1.5;
-}
-
-.wrap{
-  overflow-x:auto;
-  background:white;
-  padding:14px;
-  border-radius:10px;
-  border:1px solid #ccc;
-}
-
-table{
-  border-collapse:collapse;
-  width:100%;
-  min-width:1180px;
-  font-size:12px;
-}
-
-th{
-  background:#082244;
-  color:white;
-  padding:6px;
-}
-
-td{
-  border:1px solid #ddd;
-  height:38px;
-  text-align:center;
-  padding:3px;
-}
-
-.year,.age{
-  background:#f1f1f1;
-  font-weight:bold;
-}
-
-.past{ background:#d9d9d9; }
-.future{ background:#cfead4; }
-
-.now{
-  background:#d93a32;
-  color:white;
-  font-weight:bold;
-}
-
-.life{
-  background:#ffe16a;
-  font-weight:bold;
-}
-
-.achievement{
-  background:#7db7e8;
-  font-weight:bold;
-}
-
-.decade{
-  background:#8e63c7;
-  color:white;
-  font-weight:bold;
-}
-
-.loss{
-  background:#8b8b8b;
-  color:white;
-  font-weight:bold;
-}
-
-.celebration{
-  background:#f4a261;
-  font-weight:bold;
-}
-
-.unplanned{
-  background:#222;
-  color:white;
-}
-
-.comments{
-  text-align:left;
-  background:#fafafa;
-  min-width:220px;
-}
-
-.legend{
-  text-align:center;
-  margin:18px 0;
-  line-height:1.8;
-}
+body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:24px;background:#f7f4ee;color:#0b1f3a}
+h1{text-align:center;font-size:42px;letter-spacing:2px;margin-bottom:6px}
+.subtitle{text-align:center;max-width:850px;margin:0 auto 25px auto;line-height:1.5}
+.wrap{overflow:auto;background:white;padding:14px;border-radius:10px;border:1px solid #ccc}
+.zoomControls{text-align:center;margin:14px 0}
+button{background:#082244;color:white;padding:10px 16px;border:0;border-radius:5px;font-weight:bold;cursor:pointer;margin:4px}
+#zoomArea{transform-origin:top left;transition:transform .15s ease}
+table{border-collapse:collapse;width:100%;min-width:1180px;font-size:12px}
+th{background:#082244;color:white;padding:6px}
+td{border:1px solid #ddd;height:38px;text-align:center;padding:3px}
+.year,.age{background:#f1f1f1;font-weight:bold}
+.past{background:#d9d9d9}.future{background:#cfead4}
+.now{background:#d93a32;color:white;font-weight:bold}
+.life{background:#ffe16a;font-weight:bold}
+.achievement{background:#7db7e8;font-weight:bold}
+.decade{background:#8e63c7;color:white;font-weight:bold}
+.loss{background:#8b8b8b;color:white;font-weight:bold}
+.celebration{background:#f4a261;font-weight:bold}
+.unplanned{background:#222;color:white}
+.comments{text-align:left;background:#fafafa;min-width:220px}
+.legend{text-align:center;margin:18px 0;line-height:1.8}
+.tip{text-align:center;font-size:14px;color:#555}
 </style>
 </head>
 
@@ -119,34 +34,54 @@ td{
 
 <h1>MAP OF REMAINING TIME</h1>
 
-<p class="subtitle">
-<b>MRT is not a prediction.</b> It is a way to visualise where a life has been,
-where it currently stands, and what may still be possible.
-</p>
+<p class="subtitle"><b>MRT is not a prediction.</b> It is a way to visualise where a life has been, where it currently stands, and what may still be possible.</p>
 
 <h2>Example: Sam</h2>
 
-<p>
-<b>Born:</b> 1 July 1966 &nbsp; | &nbsp;
-<b>You are here:</b> June 2026 &nbsp; | &nbsp;
-<b>Assumed lifespan:</b> 85
-</p>
+<p><b>Born:</b> 1 July 1966 &nbsp; | &nbsp; <b>You are here:</b> June 2026 &nbsp; | &nbsp; <b>Assumed lifespan:</b> 85</p>
 
 <div class="legend">
-⬜ Past &nbsp;&nbsp;
-🟥 You are here &nbsp;&nbsp;
-🟨 Life event &nbsp;&nbsp;
-🟦 Achievement &nbsp;&nbsp;
-🟪 Decade birthday &nbsp;&nbsp;
-🟧 Celebration &nbsp;&nbsp;
-⬛ Beyond assumption
+⬜ Past &nbsp;&nbsp; 🟥 You are here &nbsp;&nbsp; 🟨 Life event &nbsp;&nbsp; 🟦 Achievement &nbsp;&nbsp; 🟪 Decade birthday &nbsp;&nbsp; 🟧 Celebration &nbsp;&nbsp; ⬛ Beyond assumption
+</div>
+
+<p class="tip">Tip: use the zoom buttons, or scroll sideways on smaller screens.</p>
+
+<div class="zoomControls">
+<button onclick="zoomOut()">− Zoom Out</button>
+<button onclick="resetZoom()">Reset</button>
+<button onclick="zoomIn()">+ Zoom In</button>
 </div>
 
 <div class="wrap">
+<div id="zoomArea">
 <table id="samTable"></table>
+</div>
 </div>
 
 <script>
+let zoomLevel = 1;
+
+function applyZoom(){
+  const area = document.getElementById("zoomArea");
+  area.style.transform = `scale(${zoomLevel})`;
+  area.style.width = `${100 / zoomLevel}%`;
+}
+
+function zoomIn(){
+  zoomLevel = Math.min(1.6, zoomLevel + 0.1);
+  applyZoom();
+}
+
+function zoomOut(){
+  zoomLevel = Math.max(0.5, zoomLevel - 0.1);
+  applyZoom();
+}
+
+function resetZoom(){
+  zoomLevel = 1;
+  applyZoom();
+}
+
 const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
 const samEvents = {
@@ -190,38 +125,7 @@ const samEvents = {
 };
 
 const samComments = {
-1966:"Birth year.",
-1970:"School begins.",
-1976:"Double digits.",
-1981:"Early memories.",
-1984:"School complete.",
-1985:"First taste of independence.",
-1986:"Work begins.",
-1989:"Travel and freedom.",
-1991:"Life starts changing direction.",
-1995:"Major life moment.",
-1998:"Mortgage begins.",
-1999:"A difficult year.",
-2001:"Family grows.",
-2003:"Big personal goal.",
-2004:"Family grows again.",
-2006:"Forty.",
-2007:"Timmy arrives.",
-2010:"Bucket list completed.",
-2014:"Needed more space.",
-2015:"Larger family home.",
-2016:"Half a century.",
-2018:"Career step.",
-2021:"Goodbye Timmy.",
-2024:"Long-awaited trip.",
-2025:"A rare sporting joy.",
-2026:"Current point. Mortgage cleared. Turning 60.",
-2028:"Retirement assumption.",
-2032:"Possible major trip.",
-2035:"Possible cruise.",
-2036:"Milestone.",
-2046:"Milestone.",
-2051:"Assumed lifespan."
+1966:"Birth year.",1970:"School begins.",1976:"Double digits.",1981:"Early memories.",1984:"School complete.",1985:"First taste of independence.",1986:"Work begins.",1989:"Travel and freedom.",1991:"Life starts changing direction.",1995:"Major life moment.",1998:"Mortgage begins.",1999:"A difficult year.",2001:"Family grows.",2003:"Big personal goal.",2004:"Family grows again.",2006:"Forty.",2007:"Timmy arrives.",2010:"Bucket list completed.",2014:"Needed more space.",2015:"Larger family home.",2016:"Half a century.",2018:"Career step.",2021:"Goodbye Timmy.",2024:"Long-awaited trip.",2025:"A rare sporting joy.",2026:"Current point. Mortgage cleared. Turning 60.",2028:"Retirement assumption.",2032:"Possible major trip.",2035:"Possible cruise.",2036:"Milestone.",2046:"Milestone.",2051:"Assumed lifespan."
 };
 
 function header(){
