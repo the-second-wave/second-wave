@@ -31,7 +31,8 @@ td{border:1px solid #ddd;height:38px;text-align:center;padding:3px}
 .legend{text-align:center;margin:18px 0;line-height:1.8}
 .tip{text-align:center;font-size:14px;color:#555}
 hr{margin:32px 0}
-input{padding:8px;margin:5px}
+input,select{padding:8px;margin:5px}
+.eventList{max-width:900px;margin:10px auto;text-align:left;background:white;border:1px solid #ddd;border-radius:8px;padding:12px}
 </style>
 </head>
 
@@ -88,7 +89,7 @@ and amber years that may still be enjoyed, albeit often with greater limitations
 <h2>Create Your MRT</h2>
 
 <p class="tip">
-Enter your details to generate a blank MRT. Nothing is saved.
+Enter your details, add your own events, then generate your MRT. Nothing is saved.
 </p>
 
 <div class="controls">
@@ -107,6 +108,40 @@ Amber years begin:
 <button onclick="buildUserMRT()">Generate My MRT</button>
 </div>
 
+<h3 style="text-align:center;">Add Events To Your MRT</h3>
+
+<div class="controls">
+Year:
+<input type="number" id="eventYear" value="2028">
+
+Month:
+<select id="eventMonth">
+<option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option>
+<option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option>
+<option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option>
+<option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+</select>
+
+Event:
+<input type="text" id="eventText" value="Retirement">
+
+Type:
+<select id="eventType">
+<option value="life">Life event</option>
+<option value="achievement">Achievement</option>
+<option value="loss">Loss</option>
+<option value="celebration">Celebration</option>
+<option value="decade">Birthday</option>
+</select>
+
+Comment:
+<input type="text" id="eventComment" value="A new chapter">
+
+<button onclick="addUserEvent()">Add Event</button>
+</div>
+
+<div class="eventList" id="eventList"></div>
+
 <div class="controls">
 <button onclick="zoomMap('user',-0.1)">− Zoom Out</button>
 <button onclick="resetMap('user')">Reset</button>
@@ -123,6 +158,8 @@ Amber years begin:
 
 <script>
 const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+let userEvents = [];
 
 const maps = {
   sam:{zoom:1,notes:false,wrap:"samWrap",area:"samZoom",table:"samTable",button:"samNotesBtn"},
@@ -277,125 +314,21 @@ function buildSam(){
   setTimeout(function(){fitMap("sam")},200);
 }
 
-function buildUserMRT(){
-  const dob = new Date(document.getElementById("userDob").value);
-  const current = new Date(document.getElementById("userCurrentDate").value);
-  const lifespan = parseInt(document.getElementById("userLifespan").value);
-  const amberAge = parseInt(document.getElementById("userAmberAge").value);
-
-  const birthYear = dob.getFullYear();
-  const birthMonth = dob.getMonth() + 1;
-  const currentYear = current.getFullYear();
-  const currentMonth = current.getMonth() + 1;
-  const endYear = birthYear + lifespan;
-  const amberYear = birthYear + amberAge;
-
-  let html = header();
-
-  for(let year=birthYear; year<=endYear; year++){
-    let age = year - birthYear;
-    html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
-
-    for(let m=1; m<=12; m++){
-      let cls = "future";
-      let text = "";
-
-      if(year < currentYear || (year === currentYear && m < currentMonth)) cls = "past";
-      else if(year < amberYear) cls = "future";
-      else cls = "later";
-
-      if(year === currentYear && m === currentMonth){
-        cls = "now";
-        text = "YOU ARE<br>HERE";
-      }
-
-      if(year === birthYear && m === birthMonth){
-        cls = "life";
-        text = "Born";
-      }
-
-      if(age > 0 && age % 10 === 0 && m === birthMonth){
-        cls = "decade";
-        text = age + "th<br>Birthday";
-      }
-
-      if(year === endYear && m === birthMonth){
-        cls = "unplanned";
-        text = lifespan;
-      }
-
-      html += `<td class="${cls}">${text}</td>`;
-    }
-
-    let note = "";
-    if(year === birthYear) note = "Birth year.";
-    if(year === currentYear) note = "Current point.";
-    if(year === amberYear) note = "Amber years begin.";
-    if(year === endYear) note = "Assumed lifespan.";
-
-    html += `<td class="comments">${note}</td></tr>`;
-  }
-
-  document.getElementById("userTable").innerHTML = html;
-  setTimeout(function(){fitMap("user")},200);
-}
-
-buildSam();
-buildUserMRT();
-
-window.addEventListener("resize",function(){
-  fitMap("sam");
-  fitMap("user");
-});
-</script>
-<hr style="margin:32px 0;">
-
-<h2>Add Events To Your MRT</h2>
-
-<div class="controls">
-Year:
-<input type="number" id="eventYear" value="2028">
-
-Month:
-<select id="eventMonth">
-  <option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option>
-  <option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option>
-  <option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option>
-  <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
-</select>
-
-Event:
-<input type="text" id="eventText" value="Retirement">
-
-Type:
-<select id="eventType">
-  <option value="life">Life event</option>
-  <option value="achievement">Achievement</option>
-  <option value="loss">Loss</option>
-  <option value="celebration">Celebration</option>
-  <option value="decade">Birthday</option>
-</select>
-
-Comment:
-<input type="text" id="eventComment" value="A new chapter">
-
-<button onclick="addUserEvent()">Add Event</button>
-</div>
-
-<div class="controls" id="eventList"></div>
-
-<script>
-let userEvents = [];
-
 function addUserEvent(){
   userEvents.push({
-    year: parseInt(document.getElementById("eventYear").value),
-    month: parseInt(document.getElementById("eventMonth").value),
-    text: document.getElementById("eventText").value,
-    type: document.getElementById("eventType").value,
-    comment: document.getElementById("eventComment").value
+    year:parseInt(document.getElementById("eventYear").value),
+    month:parseInt(document.getElementById("eventMonth").value),
+    text:document.getElementById("eventText").value,
+    type:document.getElementById("eventType").value,
+    comment:document.getElementById("eventComment").value
   });
 
+  renderUserEvents();
+  buildUserMRT();
+}
+
+function deleteUserEvent(index){
+  userEvents.splice(index,1);
   renderUserEvents();
   buildUserMRT();
 }
@@ -403,18 +336,16 @@ function addUserEvent(){
 function renderUserEvents(){
   let html = "<b>Added Events:</b><br>";
 
-  userEvents.forEach(function(e,i){
-    html += `${e.year} / ${e.month} — ${e.text} 
-    <button onclick="deleteUserEvent(${i})">Delete</button><br>`;
-  });
+  if(userEvents.length === 0){
+    html += "No custom events added yet.";
+  }else{
+    userEvents.forEach(function(e,i){
+      html += `${e.year} ${months[e.month-1]} — ${e.text} 
+      <button onclick="deleteUserEvent(${i})">Delete</button><br>`;
+    });
+  }
 
   document.getElementById("eventList").innerHTML = html;
-}
-
-function deleteUserEvent(index){
-  userEvents.splice(index,1);
-  renderUserEvents();
-  buildUserMRT();
 }
 
 function buildUserMRT(){
@@ -492,8 +423,15 @@ function buildUserMRT(){
   setTimeout(function(){fitMap("user")},200);
 }
 
+buildSam();
 renderUserEvents();
 buildUserMRT();
+
+window.addEventListener("resize",function(){
+  fitMap("sam");
+  fitMap("user");
+});
 </script>
+
 </body>
 </html>
