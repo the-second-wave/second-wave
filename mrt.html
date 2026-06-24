@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <title>Map Of Remaining Time</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <style>
-
 body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:24px;background:#f7f4ee;color:#0b1f3a}
-...
 h1{text-align:center;font-size:42px;letter-spacing:2px;margin-bottom:6px}
 .subtitle{text-align:center;max-width:850px;margin:0 auto 25px auto;line-height:1.5}
 .wrap{overflow:auto;background:white;padding:14px;border-radius:10px;border:1px solid #ccc}
@@ -53,8 +48,7 @@ input,select{padding:8px;margin:5px}
 <h1>MAP OF REMAINING TIME</h1>
 
 <p class="subtitle">
-<b>MRT is not a prediction.</b> It is a way to visualise where a life has been,
-where it currently stands, and how quickly the active years ahead may narrow.
+<b>MRT is not a prediction.</b> It is simply a way to visualise time already lived, time likely remaining, and how active years may narrow.
 </p>
 
 <h2>Example: Sam</h2>
@@ -65,7 +59,7 @@ where it currently stands, and how quickly the active years ahead may narrow.
 <b>Assumed lifespan:</b> 85
 </p>
 
-<"legend">
+<div class="legend">
 ⬜ Lived &nbsp;&nbsp;
 🟥 You are here &nbsp;&nbsp;
 🟩 Active years &nbsp;&nbsp;
@@ -78,18 +72,18 @@ where it currently stands, and how quickly the active years ahead may narrow.
 </div>
 
 <p class="tip">
-Start with <b>Fit Whole Map</b> to compare years already lived, active years remaining,
+Start with <b>Reset</b> to compare years already lived, active years remaining,
 and amber years that may still be enjoyed, albeit often with greater limitations.
 </p>
 
-<"controls">
+<div class="controls">
 <button onclick="zoomMap('sam',-0.1)">− Zoom Out</button>
 <button onclick="resetMap('sam')">Reset</button>
 <button onclick="zoomMap('sam',0.1)">+ Zoom In</button>
 <button id="samNotesBtn" onclick="toggleNotes('sam')">Show Notes</button>
 </div>
 
-<"wrap" id="samWrap">
+<div class="wrap" id="samWrap">
 <div id="samZoom" class="zoomArea hideNotes">
 <table id="samTable"></table>
 </div>
@@ -162,7 +156,9 @@ Comment:
 <button id="userNotesBtn" onclick="toggleNotes('user')">Show Notes</button>
 <button onclick="downloadMRT()">📷 Download MRT</button>
 </div>
-
+<p class="tip">
+PNG download works best on desktop. Mobile users may prefer a screenshot.
+</p>
 <div class="wrap" id="userWrap">
 <div id="userZoom" class="zoomArea hideNotes">
 <table id="userTable"></table>
@@ -225,7 +221,6 @@ function zoomMap(which,amount){
 
 function resetMap(which){
   fitMap(which);
-}
 }
 
 function fitMap(which){
@@ -471,43 +466,30 @@ function buildUserMRT(){
   saveMRT();
 }
 
+function downloadMRT(){
+  const oldZoom = maps.user.zoom;
+
+  maps.user.zoom = 1;
+  applyZoom("user");
+
+  setTimeout(function(){
+    html2canvas(document.getElementById("userWrap")).then(function(canvas){
+      const link = document.createElement("a");
+      link.download = "MRT.png";
+      link.href = canvas.toDataURL();
+      link.click();
+
+      maps.user.zoom = oldZoom;
+      applyZoom("user");
+    });
+  },300);
+}
+
 buildSam();
 loadMRT();
 renderUserEvents();
 buildUserMRT();
-function downloadMRT(){
 
-const oldZoom = maps.user.zoom;
-
-maps.user.zoom = 1;
-
-applyZoom('user');
-
-setTimeout(()=>{
-
-html2canvas(
-document.getElementById("userWrap")
-).then(canvas=>{
-
-const link =
-document.createElement('a');
-
-link.download = "MRT.png";
-
-link.href =
-canvas.toDataURL();
-
-link.click();
-
-maps.user.zoom = oldZoom;
-
-applyZoom('user');
-
-});
-
-},300);
-
-}
 window.addEventListener("resize",function(){
   fitMap("sam");
   fitMap("user");
