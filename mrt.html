@@ -12,21 +12,25 @@ body{
   background:#f7f4ee;
   color:#0b1f3a;
 }
+
 h1{
   text-align:center;
   font-size:42px;
   letter-spacing:2px;
   margin-bottom:5px;
 }
+
 .subtitle{
   text-align:center;
-  font-style:italic;
-  max-width:760px;
+  max-width:850px;
   margin:0 auto 25px auto;
+  line-height:1.5;
 }
+
 h2{
-  margin-top:20px;
+  margin-top:26px;
 }
+
 .wrap{
   overflow-x:auto;
   background:white;
@@ -34,51 +38,80 @@ h2{
   border-radius:10px;
   border:1px solid #ccc;
 }
+
 table{
   border-collapse:collapse;
   width:100%;
-  min-width:1100px;
+  min-width:1150px;
   font-size:12px;
 }
+
 th{
   background:#082244;
   color:white;
   padding:6px;
 }
+
 td{
   border:1px solid #ddd;
-  height:34px;
+  height:36px;
   text-align:center;
   padding:3px;
 }
+
 .year,.age{
   background:#f1f1f1;
   font-weight:bold;
 }
+
 .past{ background:#d9d9d9; }
 .future{ background:#cfead4; }
+
 .now{
   background:#d93a32;
   color:white;
   font-weight:bold;
 }
-.milestone{
+
+.life{
   background:#ffe16a;
   font-weight:bold;
 }
+
+.achievement{
+  background:#7db7e8;
+  font-weight:bold;
+}
+
+.decade{
+  background:#8e63c7;
+  color:white;
+  font-weight:bold;
+}
+
+.loss{
+  background:#9e9e9e;
+  color:white;
+  font-weight:bold;
+}
+
 .unplanned{
   background:#222;
   color:white;
 }
+
 .comments{
   text-align:left;
   background:#fafafa;
-  min-width:190px;
+  min-width:210px;
 }
+
 .legend{
   text-align:center;
   margin:16px 0 28px 0;
+  line-height:1.8;
 }
+
 .formbox{
   margin:28px auto;
   padding:18px;
@@ -88,10 +121,12 @@ td{
   border:1px solid #ccc;
   text-align:center;
 }
+
 input{
   padding:9px;
   margin:8px;
 }
+
 button{
   background:#082244;
   color:white;
@@ -99,7 +134,9 @@ button{
   border:0;
   border-radius:4px;
   font-weight:bold;
+  cursor:pointer;
 }
+
 .note{
   background:white;
   border:1px solid #ccc;
@@ -115,19 +152,29 @@ button{
 <h1>MAP OF REMAINING TIME</h1>
 
 <p class="subtitle">
-MRT is not a prediction. It is a way to visualise your life so far, where you are now,
-and the opportunities that may lie ahead.
+<b>MRT is not a prediction.</b> It is a way to visualise where a life has been,
+where it currently stands, and what may still be possible.
 </p>
 
 <h2>EXAMPLE: SAM</h2>
-<p><b>Born:</b> 1 July 1966 &nbsp; | &nbsp; <b>You are here:</b> June 2026 &nbsp; | &nbsp; <b>Assumed lifespan:</b> 85</p>
+
+<p>
+<b>Born:</b> 1 July 1966 &nbsp; | &nbsp;
+<b>You are here:</b> June 2026 &nbsp; | &nbsp;
+<b>Assumed lifespan:</b> 85
+</p>
 
 <div class="wrap">
 <table id="exampleTable"></table>
 </div>
 
 <div class="legend">
-⬜ Past &nbsp;&nbsp; 🟥 You are here &nbsp;&nbsp; 🟨 Milestone / Event &nbsp;&nbsp; 🟩 Future &nbsp;&nbsp; ⬛ Beyond assumption
+⬜ Past &nbsp;&nbsp;
+🟥 You are here &nbsp;&nbsp;
+🟨 Life event &nbsp;&nbsp;
+🟦 Achievement &nbsp;&nbsp;
+🟪 Decade birthday &nbsp;&nbsp;
+⬛ Beyond assumption
 </div>
 
 <div class="formbox">
@@ -155,160 +202,172 @@ Current date:
 </div>
 
 <div class="note">
-<h2>💡 HOW TO USE MRT</h2>
-<p>Add key life events in the yellow boxes. Grey shows the past. Green shows the time ahead. The empty spaces are not predictions — they are invitations.</p>
+<h2>How to use MRT</h2>
+<p>
+Grey shows the past. Green shows the time ahead. Purple marks decade birthdays.
+Yellow marks life events. Blue marks achievements. The red box shows where the person currently stands.
+The empty spaces are not predictions — they are invitations.
+</p>
 </div>
 
 <script>
 const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
-const events = {
-"1966-7":"Born",
-"1970-3":"First<br>Day<br>School",
-"1976-4":"Learned<br>to Swim",
-"1976-12":"Family<br>Holiday",
-"1984-12":"Finished<br>School",
-"1986-3":"First<br>Job",
-"1989-9":"Got<br>Licence",
-"1991-5":"Overseas<br>Travel",
-"1993-8":"Returned<br>Home",
-"1995-11":"Married",
-"1997-5":"Bought<br>First Car",
-"1998-8":"Bought<br>House",
-"2001-3":"Career<br>Change",
-"2002-9":"Daughter<br>Born",
-"2003-10":"Marathon",
-"2006-4":"Promotion",
-"2008-7":"Family<br>Holiday",
-"2011-2":"Business<br>Trip",
-"2014-6":"Reset<br>& Reflect",
-"2016-12":"50th<br>Birthday",
-"2020-4":"COVID<br>Year",
-"2022-8":"Grandchild<br>Born",
-"2024-11":"Big<br>Trip",
-"2026-6":"YOU ARE<br>HERE",
-"2028-7":"Retirement",
-"2030-5":"Road<br>Trip",
-"2033-3":"Always<br>Wanted To",
-"2036-7":"70th<br>Birthday",
-"2041-10":"Family<br>Reunion",
-"2046-7":"80th<br>Birthday",
-"2051-7":"85"
+const samEvents = {
+"1966-7": {text:"Born", type:"life"},
+"1970-2": {text:"Started<br>School", type:"life"},
+"1976-7": {text:"10th<br>Birthday", type:"decade"},
+"1984-12": {text:"Finished<br>School", type:"achievement"},
+"1986-3": {text:"First<br>Job", type:"achievement"},
+"1986-7": {text:"20th<br>Birthday", type:"decade"},
+"1989-9": {text:"Got<br>Licence", type:"achievement"},
+"1991-5": {text:"Backpacked<br>Overseas", type:"life"},
+"1993-8": {text:"Changed<br>Job", type:"achievement"},
+"1995-11": {text:"Married", type:"life"},
+"1996-7": {text:"30th<br>Birthday", type:"decade"},
+"1997-5": {text:"Bought<br>Car", type:"life"},
+"1998-8": {text:"Bought<br>House", type:"life"},
+"1999-2": {text:"Mum's<br>Funeral", type:"loss"},
+"2003-10": {text:"Marathon", type:"achievement"},
+"2006-7": {text:"40th<br>Birthday", type:"decade"},
+"2007-4": {text:"Timmy<br>Arrives", type:"life"},
+"2010-6": {text:"1000 Mile<br>Hike", type:"achievement"},
+"2012-11": {text:"Paid Off<br>House", type:"achievement"},
+"2015-2": {text:"Business<br>Trip", type:"achievement"},
+"2016-7": {text:"50th<br>Birthday", type:"decade"},
+"2020-4": {text:"COVID<br>Year", type:"life"},
+"2021-9": {text:"Timmy<br>Passes", type:"loss"},
+"2024-11": {text:"Europe<br>Trip", type:"life"},
+"2026-6": {text:"YOU ARE<br>HERE", type:"now"},
+"2026-7": {text:"60th<br>Birthday", type:"decade"},
+"2028-7": {text:"Retirement", type:"life"},
+"2030-5": {text:"Road<br>Trip", type:"life"},
+"2033-3": {text:"Grandchild?", type:"life"},
+"2036-7": {text:"70th<br>Birthday", type:"decade"},
+"2040-6": {text:"Write<br>Memoir", type:"achievement"},
+"2043-10": {text:"Family<br>Reunion", type:"life"},
+"2046-7": {text:"80th<br>Birthday", type:"decade"},
+"2051-7": {text:"85", type:"decade"}
 };
 
-const comments = {
+const samComments = {
 1966:"Birth year.",
-1970:"Primary school years.",
-1976:"Great memories.",
+1970:"School begins.",
+1976:"Double digits.",
 1984:"School complete.",
 1986:"Started working.",
 1989:"Freedom.",
-1991:"Six months overseas.",
-1993:"New perspective.",
+1991:"Six months abroad.",
+1993:"New direction.",
 1995:"Major life moment.",
-1997:"First big purchase.",
-1998:"First home.",
-2001:"New direction.",
-2002:"Life changed forever.",
+1996:"Thirty.",
+1997:"First car.",
+1998:"Mortgage begins.",
+1999:"A difficult year.",
 2003:"Big personal goal.",
-2006:"Step up at work.",
-2008:"Time together.",
-2011:"Learned a lot.",
-2014:"Reset and reflect.",
+2006:"Forty.",
+2007:"Dog Timmy arrives.",
+2010:"Bucket list completed.",
+2012:"No more mortgage.",
+2015:"New experiences.",
 2016:"Half a century.",
-2020:"Challenging times.",
-2022:"Another kind of joy.",
+2020:"Like everyone else.",
+2021:"Goodbye Timmy.",
 2024:"Bucket list moment.",
 2026:"Current point.",
-2028:"Time for new adventures.",
-2030:"Six months on the road.",
-2033:"A long-held plan.",
+2028:"A new chapter.",
+2030:"Coast to coast.",
+2033:"Possibility.",
 2036:"Milestone.",
-2041:"Making memories.",
-2046:"Another milestone.",
+2040:"Something to leave behind.",
+2043:"Making memories.",
+2046:"Big milestone.",
 2051:"Assumed lifespan."
 };
 
 function header(){
-let html = "<tr><th>YEAR</th><th>AGE</th>";
-months.forEach(m => html += `<th>${m}</th>`);
-html += "<th>COMMENTS / NOTES</th></tr>";
-return html;
+  let html = "<tr><th>YEAR</th><th>AGE</th>";
+  months.forEach(m => html += `<th>${m}</th>`);
+  html += "<th>COMMENTS / NOTES</th></tr>";
+  return html;
 }
 
 function buildExample(){
-let html = header();
+  let html = header();
 
-for(let year=1966; year<=2051; year++){
-let age = year - 1966;
-html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
+  for(let year=1966; year<=2051; year++){
+    let age = year - 1966;
+    html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
 
-for(let m=1; m<=12; m++){
-let key = `${year}-${m}`;
-let cls = "future";
-let text = "";
+    for(let m=1; m<=12; m++){
+      let key = `${year}-${m}`;
+      let cls = "future";
+      let text = "";
 
-if(year < 2026 || (year === 2026 && m < 6)) cls = "past";
-if(year === 2026 && m === 6) cls = "now";
-if(year > 2051 || (year === 2051 && m > 7)) cls = "unplanned";
-if(events[key] && cls !== "now") cls = "milestone";
+      if(year < 2026 || (year === 2026 && m < 6)) cls = "past";
+      if(year === 2026 && m === 6) cls = "now";
+      if(year > 2051 || (year === 2051 && m > 7)) cls = "unplanned";
 
-if(events[key]) text = events[key];
+      if(samEvents[key]){
+        text = samEvents[key].text;
+        cls = samEvents[key].type;
+      }
 
-html += `<td class="${cls}">${text}</td>`;
-}
+      html += `<td class="${cls}">${text}</td>`;
+    }
 
-html += `<td class="comments">${comments[year] || ""}</td></tr>`;
-}
+    html += `<td class="comments">${samComments[year] || ""}</td></tr>`;
+  }
 
-document.getElementById("exampleTable").innerHTML = html;
+  document.getElementById("exampleTable").innerHTML = html;
 }
 
 function buildPersonal(){
-const dob = new Date(document.getElementById("dob").value);
-const lifespan = parseInt(document.getElementById("lifespan").value);
-const retireAge = parseInt(document.getElementById("retireAge").value);
-const current = new Date(document.getElementById("currentDate").value);
+  const dob = new Date(document.getElementById("dob").value);
+  const lifespan = parseInt(document.getElementById("lifespan").value);
+  const retireAge = parseInt(document.getElementById("retireAge").value);
+  const current = new Date(document.getElementById("currentDate").value);
 
-const birthYear = dob.getFullYear();
-const birthMonth = dob.getMonth()+1;
-const currentYear = current.getFullYear();
-const currentMonth = current.getMonth()+1;
-const endYear = birthYear + lifespan;
-const retireYear = birthYear + retireAge;
+  const birthYear = dob.getFullYear();
+  const birthMonth = dob.getMonth()+1;
+  const currentYear = current.getFullYear();
+  const currentMonth = current.getMonth()+1;
+  const endYear = birthYear + lifespan;
+  const retireYear = birthYear + retireAge;
 
-let html = header();
+  let html = header();
 
-for(let year=birthYear; year<=endYear+4; year++){
-let age = year - birthYear;
-html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
+  for(let year=birthYear; year<=endYear+4; year++){
+    let age = year - birthYear;
+    html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
 
-for(let m=1; m<=12; m++){
-let cls = "future";
-let text = "";
+    for(let m=1; m<=12; m++){
+      let cls = "future";
+      let text = "";
 
-if(year < currentYear || (year === currentYear && m < currentMonth)) cls = "past";
-if(year === currentYear && m === currentMonth){cls="now"; text="YOU ARE<br>HERE";}
-if(year > endYear || (year === endYear && m > birthMonth)) cls = "unplanned";
+      if(year < currentYear || (year === currentYear && m < currentMonth)) cls = "past";
+      if(year === currentYear && m === currentMonth){cls="now"; text="YOU ARE<br>HERE";}
+      if(year > endYear || (year === endYear && m > birthMonth)) cls = "unplanned";
 
-if(year === birthYear && m === birthMonth){cls="milestone"; text="Born";}
-if(year === retireYear && m === birthMonth){cls="milestone"; text="Retire";}
-if(year === endYear && m === birthMonth){cls="milestone"; text=lifespan;}
+      if(year === birthYear && m === birthMonth){cls="life"; text="Born";}
+      if(year === retireYear && m === birthMonth){cls="life"; text="Retire";}
+      if(age > 0 && age % 10 === 0 && m === birthMonth){cls="decade"; text=age+"th<br>Birthday";}
+      if(year === endYear && m === birthMonth){cls="decade"; text=lifespan;}
 
-html += `<td class="${cls}">${text}</td>`;
-}
+      html += `<td class="${cls}">${text}</td>`;
+    }
 
-let note = "";
-if(year === birthYear) note = "Birth year.";
-if(year === currentYear) note = "Current point.";
-if(year === retireYear) note = "Retirement assumption.";
-if(year === endYear) note = "Assumed lifespan.";
-if(year > endYear) note = "Beyond assumption.";
+    let note = "";
+    if(year === birthYear) note = "Birth year.";
+    if(year === currentYear) note = "Current point.";
+    if(year === retireYear) note = "Retirement assumption.";
+    if(year === endYear) note = "Assumed lifespan.";
+    if(year > endYear) note = "Beyond assumption.";
 
-html += `<td class="comments">${note}</td></tr>`;
-}
+    html += `<td class="comments">${note}</td></tr>`;
+  }
 
-document.getElementById("personalTable").innerHTML = html;
+  document.getElementById("personalTable").innerHTML = html;
 }
 
 buildExample();
