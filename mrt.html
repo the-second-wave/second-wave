@@ -1,102 +1,260 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <title>Map Of Remaining Time</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-
 body{
-font-family:Arial,Helvetica,sans-serif;
-max-width:1000px;
-margin:auto;
-padding:40px;
-background:#f5f5f5;
+  font-family: Arial, Helvetica, sans-serif;
+  margin:0;
+  padding:30px;
+  background:#f4f1ea;
+  color:#222;
 }
-
-h1{
-text-align:center;
+h1,h2{
+  text-align:center;
 }
-
-.grid{
-display:grid;
-grid-template-columns:repeat(12,1fr);
-gap:3px;
-margin-top:30px;
+.intro{
+  max-width:850px;
+  margin:0 auto 25px auto;
+  text-align:center;
+  font-size:18px;
+  line-height:1.5;
 }
-
-.box{
-
-height:35px;
-
-background:#d9d9d9;
-
+.legend{
+  text-align:center;
+  margin:20px;
+  font-size:14px;
 }
-
-
+.wrap{
+  overflow-x:auto;
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.12);
+}
+table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:1050px;
+  font-size:12px;
+}
+th,td{
+  border:1px solid #ccc;
+  padding:5px;
+  text-align:center;
+  height:32px;
+}
+th{
+  background:#222;
+  color:white;
+}
+.year,.age{
+  background:#eee;
+  font-weight:bold;
+}
 .past{
-background:#bdbdbd;
+  background:#d6d6d6;
 }
-
 .future{
-background:#b7e4c7;
+  background:#cfe8d5;
 }
-
-.you{
-background:#ff595e;
+.now{
+  background:#e94f4f;
+  color:white;
+  font-weight:bold;
 }
-
+.milestone{
+  background:#f4d35e;
+  font-weight:bold;
+}
+.unplanned{
+  background:#333;
+  color:white;
+}
+.comments{
+  text-align:left;
+  min-width:220px;
+  background:#fafafa;
+}
+.formbox{
+  margin:35px auto;
+  padding:20px;
+  max-width:700px;
+  background:white;
+  border-radius:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.12);
+}
+input{
+  padding:8px;
+  margin:6px;
+}
+button{
+  padding:10px 18px;
+  margin-top:10px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.small{
+  font-size:13px;
+  color:#555;
+}
 </style>
-
 </head>
 
 <body>
 
 <h1>Map Of Remaining Time</h1>
 
-<p align="center">
-
-Alex • Age 60 • Lifespan Assumption 85
-
-</p>
-
-
-<div class="grid">
-
-<div class="box past"></div>
-<div class="box past"></div>
-<div class="box past"></div>
-<div class="box past"></div>
-<div class="box past"></div>
-<div class="box past"></div>
-
-<div class="box you"></div>
-
-<div class="box future"></div>
-<div class="box future"></div>
-<div class="box future"></div>
-<div class="box future"></div>
-<div class="box future"></div>
-
+<div class="intro">
+<p><b>MRT is not a prediction.</b> It is a visual way to consider where a life has been, where it currently stands, and what may still be possible.</p>
+<p>This example uses a fictional person named <b>Sam</b>.</p>
 </div>
 
+<div class="legend">
+⬜ Past &nbsp;&nbsp; 🟥 You Are Here &nbsp;&nbsp; 🟨 Milestone &nbsp;&nbsp; 🟩 Future &nbsp;&nbsp; ⬛ Beyond Assumption
+</div>
 
-<p>
+<div class="wrap">
+<table id="exampleTable"></table>
+</div>
 
-🩶 Past
+<div class="formbox">
+<h2>Build Your Own MRT</h2>
+<p class="small">Enter your details. Nothing is saved. It only generates on this page.</p>
 
-&nbsp;&nbsp;&nbsp;
+<label>Date of birth:</label>
+<input type="date" id="dob" value="1966-07-01"><br>
 
-🟥 You are here
+<label>Assumed lifespan:</label>
+<input type="number" id="lifespan" value="85"><br>
 
-&nbsp;&nbsp;&nbsp;
+<label>Retirement age:</label>
+<input type="number" id="retireAge" value="62"><br>
 
-🟩 Future
+<button onclick="buildPersonal()">Generate MRT</button>
+</div>
 
-</p>
+<div class="wrap">
+<table id="personalTable"></table>
+</div>
 
+<script>
+const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+const exampleEvents = {
+  "1966-7": "Born",
+  "1984-12": "School",
+  "1991-5": "Travel",
+  "1995-10": "Married",
+  "2003-10": "Marathon",
+  "2026-6": "YOU<br>ARE<br>HERE",
+  "2028-7": "Retire",
+  "2030-6": "Europe",
+  "2036-7": "70",
+  "2046-7": "80",
+  "2051-7": "85"
+};
+
+const exampleComments = {
+  1966: "Sam is born.",
+  1984: "Finished school.",
+  1991: "Overseas travel.",
+  2003: "Completed a marathon.",
+  2026: "Current point on the map.",
+  2028: "Retirement assumption.",
+  2030: "Possible major trip.",
+  2051: "Assumed lifespan."
+};
+
+function makeHeader(){
+  let html = "<tr><th>YEAR</th><th>AGE</th>";
+  months.forEach(m => html += `<th>${m}</th>`);
+  html += "<th>COMMENTS</th></tr>";
+  return html;
+}
+
+function buildExample(){
+  let table = document.getElementById("exampleTable");
+  let html = makeHeader();
+
+  for(let year=1966; year<=2055; year++){
+    let age = year - 1966;
+    html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
+
+    for(let m=1; m<=12; m++){
+      let key = `${year}-${m}`;
+      let cls = "future";
+      let text = "";
+
+      if(year < 2026 || (year === 2026 && m < 6)) cls = "past";
+      if(year === 2026 && m === 6) cls = "now";
+      if(year > 2051 || (year === 2051 && m > 7)) cls = "unplanned";
+      if(exampleEvents[key] && cls !== "now") cls = "milestone";
+
+      if(exampleEvents[key]) text = exampleEvents[key];
+
+      html += `<td class="${cls}">${text}</td>`;
+    }
+
+    html += `<td class="comments">${exampleComments[year] || ""}</td></tr>`;
+  }
+
+  table.innerHTML = html;
+}
+
+function buildPersonal(){
+  const dob = new Date(document.getElementById("dob").value);
+  const lifespan = parseInt(document.getElementById("lifespan").value);
+  const retireAge = parseInt(document.getElementById("retireAge").value);
+  const now = new Date();
+
+  const birthYear = dob.getFullYear();
+  const birthMonth = dob.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+  const endYear = birthYear + lifespan;
+  const retireYear = birthYear + retireAge;
+
+  let table = document.getElementById("personalTable");
+  let html = makeHeader();
+
+  for(let year=birthYear; year<=endYear+4; year++){
+    let age = year - birthYear;
+    html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
+
+    for(let m=1; m<=12; m++){
+      let cls = "future";
+      let text = "";
+
+      if(year < currentYear || (year === currentYear && m < currentMonth)) cls = "past";
+      if(year === currentYear && m === currentMonth){ cls = "now"; text = "YOU<br>ARE<br>HERE"; }
+      if(year > endYear || (year === endYear && m > birthMonth)) cls = "unplanned";
+
+      if(year === birthYear && m === birthMonth){ cls = "milestone"; text = "Born"; }
+      if(year === retireYear && m === birthMonth){ cls = "milestone"; text = "Retire"; }
+      if(year === endYear && m === birthMonth){ cls = "milestone"; text = lifespan; }
+
+      html += `<td class="${cls}">${text}</td>`;
+    }
+
+    let comment = "";
+    if(year === birthYear) comment = "Birth year.";
+    if(year === currentYear) comment = "Current year.";
+    if(year === retireYear) comment = "Retirement assumption.";
+    if(year === endYear) comment = "Assumed lifespan.";
+
+    html += `<td class="comments">${comment}</td></tr>`;
+  }
+
+  table.innerHTML = html;
+}
+
+buildExample();
+</script>
 
 </body>
+</html>
 
 </html>
