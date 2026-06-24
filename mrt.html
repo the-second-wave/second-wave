@@ -251,6 +251,105 @@ function buildSam(){
 buildSam();
 window.addEventListener("resize", fitWholeMap);
 </script>
+<hr style="margin:40px 0;">
 
+<h2>Create Your MRT</h2>
+
+<p class="tip">
+Enter your details to generate a blank MRT. Nothing is saved.
+</p>
+
+<div class="controls">
+  Date of birth:
+  <input type="date" id="userDob" value="1966-07-01">
+
+  Current date:
+  <input type="date" id="userCurrentDate" value="2026-06-01">
+
+  Assumed lifespan:
+  <input type="number" id="userLifespan" value="85">
+
+  Amber years begin:
+  <input type="number" id="userAmberAge" value="75">
+
+  <button onclick="buildUserMRT()">Generate My MRT</button>
+</div>
+
+<div class="wrap" id="userMapWrap">
+  <div id="userZoomArea">
+    <table id="userTable"></table>
+  </div>
+</div>
+
+<script>
+function buildUserMRT(){
+  const dob = new Date(document.getElementById("userDob").value);
+  const current = new Date(document.getElementById("userCurrentDate").value);
+  const lifespan = parseInt(document.getElementById("userLifespan").value);
+  const amberAge = parseInt(document.getElementById("userAmberAge").value);
+
+  const birthYear = dob.getFullYear();
+  const birthMonth = dob.getMonth() + 1;
+  const currentYear = current.getFullYear();
+  const currentMonth = current.getMonth() + 1;
+  const endYear = birthYear + lifespan;
+  const amberYear = birthYear + amberAge;
+
+  let html = header();
+
+  for(let year=birthYear; year<=endYear; year++){
+    let age = year - birthYear;
+
+    html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
+
+    for(let m=1; m<=12; m++){
+      let cls = "future";
+      let text = "";
+
+      if(year < currentYear || (year === currentYear && m < currentMonth)){
+        cls = "past";
+      }else if(year < amberYear){
+        cls = "future";
+      }else{
+        cls = "later";
+      }
+
+      if(year === currentYear && m === currentMonth){
+        cls = "now";
+        text = "YOU ARE<br>HERE";
+      }
+
+      if(year === birthYear && m === birthMonth){
+        cls = "life";
+        text = "Born";
+      }
+
+      if(age > 0 && age % 10 === 0 && m === birthMonth){
+        cls = "decade";
+        text = age + "th<br>Birthday";
+      }
+
+      if(year === endYear && m === birthMonth){
+        cls = "unplanned";
+        text = lifespan;
+      }
+
+      html += `<td class="${cls}">${text}</td>`;
+    }
+
+    let note = "";
+    if(year === birthYear) note = "Birth year.";
+    if(year === currentYear) note = "Current point.";
+    if(year === amberYear) note = "Amber years begin.";
+    if(year === endYear) note = "Assumed lifespan.";
+
+    html += `<td class="comments">${note}</td></tr>`;
+  }
+
+  document.getElementById("userTable").innerHTML = html;
+}
+
+buildUserMRT();
+</script>
 </body>
 </html>
