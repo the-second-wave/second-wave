@@ -17,7 +17,7 @@ h1{
   text-align:center;
   font-size:42px;
   letter-spacing:2px;
-  margin-bottom:5px;
+  margin-bottom:6px;
 }
 
 .subtitle{
@@ -25,10 +25,6 @@ h1{
   max-width:850px;
   margin:0 auto 25px auto;
   line-height:1.5;
-}
-
-h2{
-  margin-top:26px;
 }
 
 .wrap{
@@ -42,7 +38,7 @@ h2{
 table{
   border-collapse:collapse;
   width:100%;
-  min-width:1150px;
+  min-width:1180px;
   font-size:12px;
 }
 
@@ -54,7 +50,7 @@ th{
 
 td{
   border:1px solid #ddd;
-  height:36px;
+  height:38px;
   text-align:center;
   padding:3px;
 }
@@ -90,8 +86,13 @@ td{
 }
 
 .loss{
-  background:#9e9e9e;
+  background:#8b8b8b;
   color:white;
+  font-weight:bold;
+}
+
+.celebration{
+  background:#f4a261;
   font-weight:bold;
 }
 
@@ -103,46 +104,13 @@ td{
 .comments{
   text-align:left;
   background:#fafafa;
-  min-width:210px;
+  min-width:220px;
 }
 
 .legend{
   text-align:center;
-  margin:16px 0 28px 0;
+  margin:18px 0;
   line-height:1.8;
-}
-
-.formbox{
-  margin:28px auto;
-  padding:18px;
-  max-width:900px;
-  background:white;
-  border-radius:10px;
-  border:1px solid #ccc;
-  text-align:center;
-}
-
-input{
-  padding:9px;
-  margin:8px;
-}
-
-button{
-  background:#082244;
-  color:white;
-  padding:11px 20px;
-  border:0;
-  border-radius:4px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.note{
-  background:white;
-  border:1px solid #ccc;
-  border-radius:10px;
-  padding:16px;
-  margin-top:28px;
 }
 </style>
 </head>
@@ -156,7 +124,7 @@ button{
 where it currently stands, and what may still be possible.
 </p>
 
-<h2>EXAMPLE: SAM</h2>
+<h2>Example: Sam</h2>
 
 <p>
 <b>Born:</b> 1 July 1966 &nbsp; | &nbsp;
@@ -164,50 +132,18 @@ where it currently stands, and what may still be possible.
 <b>Assumed lifespan:</b> 85
 </p>
 
-<div class="wrap">
-<table id="exampleTable"></table>
-</div>
-
 <div class="legend">
 ⬜ Past &nbsp;&nbsp;
 🟥 You are here &nbsp;&nbsp;
 🟨 Life event &nbsp;&nbsp;
 🟦 Achievement &nbsp;&nbsp;
 🟪 Decade birthday &nbsp;&nbsp;
+🟧 Celebration &nbsp;&nbsp;
 ⬛ Beyond assumption
 </div>
 
-<div class="formbox">
-<h2>BUILD YOUR OWN MRT</h2>
-<p>Enter your details. Nothing is saved. It only generates on this page.</p>
-
-Date of birth:
-<input type="date" id="dob" value="1966-07-01">
-
-Assumed lifespan:
-<input type="number" id="lifespan" value="85">
-
-Retirement age:
-<input type="number" id="retireAge" value="62">
-
-Current date:
-<input type="date" id="currentDate" value="2026-06-01">
-
-<br>
-<button onclick="buildPersonal()">GENERATE MRT</button>
-</div>
-
 <div class="wrap">
-<table id="personalTable"></table>
-</div>
-
-<div class="note">
-<h2>How to use MRT</h2>
-<p>
-Grey shows the past. Green shows the time ahead. Purple marks decade birthdays.
-Yellow marks life events. Blue marks achievements. The red box shows where the person currently stands.
-The empty spaces are not predictions — they are invitations.
-</p>
+<table id="samTable"></table>
 </div>
 
 <script>
@@ -217,35 +153,38 @@ const samEvents = {
 "1966-7": {text:"Born", type:"life"},
 "1970-2": {text:"Started<br>School", type:"life"},
 "1976-7": {text:"10th<br>Birthday", type:"decade"},
+"1981-7": {text:"First<br>Kiss 💋", type:"life"},
 "1984-12": {text:"Finished<br>School", type:"achievement"},
+"1985-9": {text:"First<br>Car 🚗", type:"life"},
 "1986-3": {text:"First<br>Job", type:"achievement"},
 "1986-7": {text:"20th<br>Birthday", type:"decade"},
-"1989-9": {text:"Got<br>Licence", type:"achievement"},
-"1991-5": {text:"Backpacked<br>Overseas", type:"life"},
-"1993-8": {text:"Changed<br>Job", type:"achievement"},
+"1989-5": {text:"Backpacked<br>Overseas", type:"life"},
+"1991-8": {text:"Met<br>Partner ❤️", type:"life"},
+"1991-11": {text:"Changed<br>Job", type:"achievement"},
 "1995-11": {text:"Married", type:"life"},
 "1996-7": {text:"30th<br>Birthday", type:"decade"},
-"1997-5": {text:"Bought<br>Car", type:"life"},
 "1998-8": {text:"Bought<br>House", type:"life"},
 "1999-2": {text:"Mum's<br>Funeral", type:"loss"},
+"2001-6": {text:"Daughter<br>Born", type:"life"},
 "2003-10": {text:"Marathon", type:"achievement"},
+"2004-1": {text:"Son<br>Born", type:"life"},
 "2006-7": {text:"40th<br>Birthday", type:"decade"},
-"2007-4": {text:"Timmy<br>Arrives", type:"life"},
+"2007-4": {text:"Timmy<br>Arrives 🐕", type:"life"},
 "2010-6": {text:"1000 Mile<br>Hike", type:"achievement"},
-"2012-11": {text:"Paid Off<br>House", type:"achievement"},
-"2015-2": {text:"Business<br>Trip", type:"achievement"},
+"2014-5": {text:"Sold<br>House", type:"life"},
+"2015-2": {text:"Bought<br>Larger<br>House", type:"life"},
 "2016-7": {text:"50th<br>Birthday", type:"decade"},
-"2020-4": {text:"COVID<br>Year", type:"life"},
-"2021-9": {text:"Timmy<br>Passes", type:"loss"},
+"2018-9": {text:"Promotion", type:"achievement"},
+"2021-8": {text:"Timmy<br>Passes", type:"loss"},
 "2024-11": {text:"Europe<br>Trip", type:"life"},
+"2025-9": {text:"Team Won<br>Championship", type:"celebration"},
+"2026-5": {text:"Mortgage<br>Paid Off", type:"achievement"},
 "2026-6": {text:"YOU ARE<br>HERE", type:"now"},
 "2026-7": {text:"60th<br>Birthday", type:"decade"},
 "2028-7": {text:"Retirement", type:"life"},
-"2030-5": {text:"Road<br>Trip", type:"life"},
-"2033-3": {text:"Grandchild?", type:"life"},
+"2032-5": {text:"Europe<br>Trip", type:"life"},
+"2035-2": {text:"Cruise 🚢", type:"life"},
 "2036-7": {text:"70th<br>Birthday", type:"decade"},
-"2040-6": {text:"Write<br>Memoir", type:"achievement"},
-"2043-10": {text:"Family<br>Reunion", type:"life"},
 "2046-7": {text:"80th<br>Birthday", type:"decade"},
 "2051-7": {text:"85", type:"decade"}
 };
@@ -254,34 +193,34 @@ const samComments = {
 1966:"Birth year.",
 1970:"School begins.",
 1976:"Double digits.",
+1981:"Early memories.",
 1984:"School complete.",
-1986:"Started working.",
-1989:"Freedom.",
-1991:"Six months abroad.",
-1993:"New direction.",
+1985:"First taste of independence.",
+1986:"Work begins.",
+1989:"Travel and freedom.",
+1991:"Life starts changing direction.",
 1995:"Major life moment.",
-1996:"Thirty.",
-1997:"First car.",
 1998:"Mortgage begins.",
 1999:"A difficult year.",
+2001:"Family grows.",
 2003:"Big personal goal.",
+2004:"Family grows again.",
 2006:"Forty.",
-2007:"Dog Timmy arrives.",
+2007:"Timmy arrives.",
 2010:"Bucket list completed.",
-2012:"No more mortgage.",
-2015:"New experiences.",
+2014:"Needed more space.",
+2015:"Larger family home.",
 2016:"Half a century.",
-2020:"Like everyone else.",
+2018:"Career step.",
 2021:"Goodbye Timmy.",
-2024:"Bucket list moment.",
-2026:"Current point.",
-2028:"A new chapter.",
-2030:"Coast to coast.",
-2033:"Possibility.",
+2024:"Long-awaited trip.",
+2025:"A rare sporting joy.",
+2026:"Current point. Mortgage cleared. Turning 60.",
+2028:"Retirement assumption.",
+2032:"Possible major trip.",
+2035:"Possible cruise.",
 2036:"Milestone.",
-2040:"Something to leave behind.",
-2043:"Making memories.",
-2046:"Big milestone.",
+2046:"Milestone.",
 2051:"Assumed lifespan."
 };
 
@@ -292,7 +231,7 @@ function header(){
   return html;
 }
 
-function buildExample(){
+function buildSam(){
   let html = header();
 
   for(let year=1966; year<=2051; year++){
@@ -319,59 +258,10 @@ function buildExample(){
     html += `<td class="comments">${samComments[year] || ""}</td></tr>`;
   }
 
-  document.getElementById("exampleTable").innerHTML = html;
+  document.getElementById("samTable").innerHTML = html;
 }
 
-function buildPersonal(){
-  const dob = new Date(document.getElementById("dob").value);
-  const lifespan = parseInt(document.getElementById("lifespan").value);
-  const retireAge = parseInt(document.getElementById("retireAge").value);
-  const current = new Date(document.getElementById("currentDate").value);
-
-  const birthYear = dob.getFullYear();
-  const birthMonth = dob.getMonth()+1;
-  const currentYear = current.getFullYear();
-  const currentMonth = current.getMonth()+1;
-  const endYear = birthYear + lifespan;
-  const retireYear = birthYear + retireAge;
-
-  let html = header();
-
-  for(let year=birthYear; year<=endYear+4; year++){
-    let age = year - birthYear;
-    html += `<tr><td class="year">${year}</td><td class="age">${age}</td>`;
-
-    for(let m=1; m<=12; m++){
-      let cls = "future";
-      let text = "";
-
-      if(year < currentYear || (year === currentYear && m < currentMonth)) cls = "past";
-      if(year === currentYear && m === currentMonth){cls="now"; text="YOU ARE<br>HERE";}
-      if(year > endYear || (year === endYear && m > birthMonth)) cls = "unplanned";
-
-      if(year === birthYear && m === birthMonth){cls="life"; text="Born";}
-      if(year === retireYear && m === birthMonth){cls="life"; text="Retire";}
-      if(age > 0 && age % 10 === 0 && m === birthMonth){cls="decade"; text=age+"th<br>Birthday";}
-      if(year === endYear && m === birthMonth){cls="decade"; text=lifespan;}
-
-      html += `<td class="${cls}">${text}</td>`;
-    }
-
-    let note = "";
-    if(year === birthYear) note = "Birth year.";
-    if(year === currentYear) note = "Current point.";
-    if(year === retireYear) note = "Retirement assumption.";
-    if(year === endYear) note = "Assumed lifespan.";
-    if(year > endYear) note = "Beyond assumption.";
-
-    html += `<td class="comments">${note}</td></tr>`;
-  }
-
-  document.getElementById("personalTable").innerHTML = html;
-}
-
-buildExample();
-buildPersonal();
+buildSam();
 </script>
 
 </body>
