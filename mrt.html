@@ -38,6 +38,7 @@ input,select{padding:8px;margin:5px}
 .eventDate{width:95px;font-weight:bold}
 .eventName{flex:1}
 .eventDelete{background:#eee;color:#222;padding:5px 8px}
+.saveNote{text-align:center;font-size:13px;color:#555}
 </style>
 </head>
 
@@ -94,8 +95,10 @@ and amber years that may still be enjoyed, albeit often with greater limitations
 <h2>Create Your MRT</h2>
 
 <p class="tip">
-Enter your details, add your own events, then generate your MRT. Nothing is saved.
+Enter your details, add your own events, then generate your MRT. Nothing is saved online.
 </p>
+
+<p class="saveNote">Your MRT automatically saves on this device and browser.</p>
 
 <div class="controls">
 Date of birth:
@@ -170,6 +173,32 @@ const maps = {
   sam:{zoom:1,notes:false,wrap:"samWrap",area:"samZoom",table:"samTable",button:"samNotesBtn"},
   user:{zoom:1,notes:false,wrap:"userWrap",area:"userZoom",table:"userTable",button:"userNotesBtn"}
 };
+
+function saveMRT(){
+  localStorage.setItem("MRT_Events", JSON.stringify(userEvents));
+  localStorage.setItem("MRT_DOB", document.getElementById("userDob").value);
+  localStorage.setItem("MRT_Current", document.getElementById("userCurrentDate").value);
+  localStorage.setItem("MRT_Lifespan", document.getElementById("userLifespan").value);
+  localStorage.setItem("MRT_Amber", document.getElementById("userAmberAge").value);
+}
+
+function loadMRT(){
+  const savedEvents = localStorage.getItem("MRT_Events");
+  if(savedEvents){
+    try{ userEvents = JSON.parse(savedEvents) || []; }
+    catch(e){ userEvents = []; }
+  }
+
+  const dob = localStorage.getItem("MRT_DOB");
+  const current = localStorage.getItem("MRT_Current");
+  const lifespan = localStorage.getItem("MRT_Lifespan");
+  const amber = localStorage.getItem("MRT_Amber");
+
+  if(dob) document.getElementById("userDob").value = dob;
+  if(current) document.getElementById("userCurrentDate").value = current;
+  if(lifespan) document.getElementById("userLifespan").value = lifespan;
+  if(amber) document.getElementById("userAmberAge").value = amber;
+}
 
 function applyZoom(which){
   const map = maps[which];
@@ -330,12 +359,14 @@ function addUserEvent(){
 
   renderUserEvents();
   buildUserMRT();
+  saveMRT();
 }
 
 function deleteUserEvent(index){
   userEvents.splice(index,1);
   renderUserEvents();
   buildUserMRT();
+  saveMRT();
 }
 
 function renderUserEvents(){
@@ -432,9 +463,11 @@ function buildUserMRT(){
 
   document.getElementById("userTable").innerHTML = html;
   setTimeout(function(){fitMap("user")},200);
+  saveMRT();
 }
 
 buildSam();
+loadMRT();
 renderUserEvents();
 buildUserMRT();
 
