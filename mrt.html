@@ -9,7 +9,7 @@ body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:24px;background:#f7
 h1{text-align:center;font-size:42px;letter-spacing:2px;margin-bottom:6px}
 .subtitle{text-align:center;max-width:850px;margin:0 auto 25px auto;line-height:1.5}
 .wrap{overflow:auto;background:white;padding:14px;border-radius:10px;border:1px solid #ccc}
-.zoomControls{text-align:center;margin:14px 0}
+.controls{text-align:center;margin:14px 0}
 button{background:#082244;color:white;padding:10px 16px;border:0;border-radius:5px;font-weight:bold;cursor:pointer;margin:4px}
 #zoomArea{transform-origin:top left;transition:transform .15s ease}
 table{border-collapse:collapse;width:100%;min-width:1180px;font-size:12px}
@@ -25,6 +25,7 @@ td{border:1px solid #ddd;height:38px;text-align:center;padding:3px}
 .celebration{background:#f4a261;font-weight:bold}
 .unplanned{background:#222;color:white}
 .comments{text-align:left;background:#fafafa;min-width:220px}
+.hideNotes .comments, .hideNotes .commentsHeader{display:none}
 .legend{text-align:center;margin:18px 0;line-height:1.8}
 .tip{text-align:center;font-size:14px;color:#555}
 </style>
@@ -41,25 +42,28 @@ td{border:1px solid #ddd;height:38px;text-align:center;padding:3px}
 <p><b>Born:</b> 1 July 1966 &nbsp; | &nbsp; <b>You are here:</b> June 2026 &nbsp; | &nbsp; <b>Assumed lifespan:</b> 85</p>
 
 <div class="legend">
-⬜ Past &nbsp;&nbsp; 🟥 You are here &nbsp;&nbsp; 🟨 Life event &nbsp;&nbsp; 🟦 Achievement &nbsp;&nbsp; 🟪 Decade birthday &nbsp;&nbsp; 🟧 Celebration &nbsp;&nbsp; ⬛ Beyond assumption
+⬜ Lived &nbsp;&nbsp; 🟥 You are here &nbsp;&nbsp; 🟨 Life event &nbsp;&nbsp; 🟦 Achievement &nbsp;&nbsp; 🟪 Decade birthday &nbsp;&nbsp; 🟧 Celebration &nbsp;&nbsp; 🟩 To be lived &nbsp;&nbsp; ⬛ Beyond assumption
 </div>
 
-<p class="tip">Tip: use the zoom buttons, or scroll sideways on smaller screens.</p>
+<p class="tip">Start with “Fit Whole Map” to see the grey/lived years against the green/to-be-lived years. Then zoom in for detail.</p>
 
-<div class="zoomControls">
+<div class="controls">
 <button onclick="zoomOut()">− Zoom Out</button>
 <button onclick="resetZoom()">Reset</button>
 <button onclick="zoomIn()">+ Zoom In</button>
+<button onclick="fitWholeMap()">Fit Whole Map</button>
+<button onclick="toggleNotes()">Show Notes</button>
 </div>
 
-<div class="wrap">
-<div id="zoomArea">
+<div class="wrap" id="mapWrap">
+<div id="zoomArea" class="hideNotes">
 <table id="samTable"></table>
 </div>
 </div>
 
 <script>
 let zoomLevel = 1;
+let notesVisible = false;
 
 function applyZoom(){
   const area = document.getElementById("zoomArea");
@@ -67,19 +71,33 @@ function applyZoom(){
   area.style.width = `${100 / zoomLevel}%`;
 }
 
-function zoomIn(){
-  zoomLevel = Math.min(1.6, zoomLevel + 0.1);
+function zoomIn(){zoomLevel=Math.min(2,zoomLevel+0.1);applyZoom();}
+function zoomOut(){zoomLevel=Math.max(0.25,zoomLevel-0.1);applyZoom();}
+function resetZoom(){zoomLevel=1;applyZoom();}
+
+function fitWholeMap(){
+  const wrap = document.getElementById("mapWrap");
+  const area = document.getElementById("zoomArea");
+  const table = document.getElementById("samTable");
+  const wrapWidth = wrap.clientWidth - 10;
+  const tableWidth = table.scrollWidth;
+  zoomLevel = Math.max(0.22, Math.min(1, wrapWidth / tableWidth));
   applyZoom();
+  wrap.scrollLeft = 0;
 }
 
-function zoomOut(){
-  zoomLevel = Math.max(0.5, zoomLevel - 0.1);
-  applyZoom();
-}
-
-function resetZoom(){
-  zoomLevel = 1;
-  applyZoom();
+function toggleNotes(){
+  const area = document.getElementById("zoomArea");
+  const btn = event.target;
+  notesVisible = !notesVisible;
+  if(notesVisible){
+    area.classList.remove("hideNotes");
+    btn.innerText = "Hide Notes";
+  }else{
+    area.classList.add("hideNotes");
+    btn.innerText = "Show Notes";
+  }
+  setTimeout(fitWholeMap,100);
 }
 
 const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
@@ -131,7 +149,7 @@ const samComments = {
 function header(){
   let html = "<tr><th>YEAR</th><th>AGE</th>";
   months.forEach(m => html += `<th>${m}</th>`);
-  html += "<th>COMMENTS / NOTES</th></tr>";
+  html += "<th class='commentsHeader'>COMMENTS / NOTES</th></tr>";
   return html;
 }
 
@@ -163,9 +181,11 @@ function buildSam(){
   }
 
   document.getElementById("samTable").innerHTML = html;
+  setTimeout(fitWholeMap,200);
 }
 
 buildSam();
+window.addEventListener("resize", fitWholeMap);
 </script>
 
 </body>
