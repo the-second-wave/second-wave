@@ -16,7 +16,9 @@ table{border-collapse:collapse;width:100%;min-width:1180px;font-size:12px}
 th{background:#082244;color:white;padding:6px}
 td{border:1px solid #ddd;height:38px;text-align:center;padding:3px}
 .year,.age{background:#f1f1f1;font-weight:bold}
-.past{background:#d9d9d9}.future{background:#cfead4}
+.past{background:#d9d9d9}
+.future{background:#cfead4}
+.later{background:#e8f5e9}
 .now{background:#d93a32;color:white;font-weight:bold}
 .life{background:#ffe16a;font-weight:bold}
 .achievement{background:#7db7e8;font-weight:bold}
@@ -35,17 +37,35 @@ td{border:1px solid #ddd;height:38px;text-align:center;padding:3px}
 
 <h1>MAP OF REMAINING TIME</h1>
 
-<p class="subtitle"><b>MRT is not a prediction.</b> It is a way to visualise where a life has been, where it currently stands, and what may still be possible.</p>
+<p class="subtitle">
+<b>MRT is not a prediction.</b> It is a way to visualise where a life has been,
+where it currently stands, and how quickly the active years ahead may narrow.
+</p>
 
 <h2>Example: Sam</h2>
 
-<p><b>Born:</b> 1 July 1966 &nbsp; | &nbsp; <b>You are here:</b> June 2026 &nbsp; | &nbsp; <b>Assumed lifespan:</b> 85</p>
+<p>
+<b>Born:</b> 1 July 1966 &nbsp; | &nbsp;
+<b>You are here:</b> June 2026 &nbsp; | &nbsp;
+<b>Assumed lifespan:</b> 85
+</p>
 
 <div class="legend">
-⬜ Lived &nbsp;&nbsp; 🟥 You are here &nbsp;&nbsp; 🟨 Life event &nbsp;&nbsp; 🟦 Achievement &nbsp;&nbsp; 🟪 Decade birthday &nbsp;&nbsp; 🟧 Celebration &nbsp;&nbsp; 🟩 To be lived &nbsp;&nbsp; ⬛ Beyond assumption
+⬜ Lived &nbsp;&nbsp;
+🟥 You are here &nbsp;&nbsp;
+🟩 Active years &nbsp;&nbsp;
+🟢 Later years &nbsp;&nbsp;
+🟨 Life event &nbsp;&nbsp;
+🟦 Achievement &nbsp;&nbsp;
+🟪 Decade birthday &nbsp;&nbsp;
+🟧 Celebration &nbsp;&nbsp;
+⬛ Beyond assumption
 </div>
 
-<p class="tip">Start with “Fit Whole Map” to see the grey/lived years against the green/to-be-lived years. Then zoom in for detail.</p>
+<p class="tip">
+Start with <b>Fit Whole Map</b> to compare years already lived, likely active years remaining,
+and later years that may still be enjoyed if health permits.
+</p>
 
 <div class="controls">
 <button onclick="zoomOut()">− Zoom Out</button>
@@ -72,16 +92,15 @@ function applyZoom(){
 }
 
 function zoomIn(){zoomLevel=Math.min(2,zoomLevel+0.1);applyZoom();}
-function zoomOut(){zoomLevel=Math.max(0.25,zoomLevel-0.1);applyZoom();}
+function zoomOut(){zoomLevel=Math.max(0.22,zoomLevel-0.1);applyZoom();}
 function resetZoom(){zoomLevel=1;applyZoom();}
 
 function fitWholeMap(){
   const wrap = document.getElementById("mapWrap");
-  const area = document.getElementById("zoomArea");
   const table = document.getElementById("samTable");
   const wrapWidth = wrap.clientWidth - 10;
   const tableWidth = table.scrollWidth;
-  zoomLevel = Math.max(0.22, Math.min(1, wrapWidth / tableWidth));
+  zoomLevel = Math.max(0.18, Math.min(1, wrapWidth / tableWidth));
   applyZoom();
   wrap.scrollLeft = 0;
 }
@@ -90,6 +109,7 @@ function toggleNotes(){
   const area = document.getElementById("zoomArea");
   const btn = event.target;
   notesVisible = !notesVisible;
+
   if(notesVisible){
     area.classList.remove("hideNotes");
     btn.innerText = "Hide Notes";
@@ -97,6 +117,7 @@ function toggleNotes(){
     area.classList.add("hideNotes");
     btn.innerText = "Show Notes";
   }
+
   setTimeout(fitWholeMap,100);
 }
 
@@ -143,7 +164,38 @@ const samEvents = {
 };
 
 const samComments = {
-1966:"Birth year.",1970:"School begins.",1976:"Double digits.",1981:"Early memories.",1984:"School complete.",1985:"First taste of independence.",1986:"Work begins.",1989:"Travel and freedom.",1991:"Life starts changing direction.",1995:"Major life moment.",1998:"Mortgage begins.",1999:"A difficult year.",2001:"Family grows.",2003:"Big personal goal.",2004:"Family grows again.",2006:"Forty.",2007:"Timmy arrives.",2010:"Bucket list completed.",2014:"Needed more space.",2015:"Larger family home.",2016:"Half a century.",2018:"Career step.",2021:"Goodbye Timmy.",2024:"Long-awaited trip.",2025:"A rare sporting joy.",2026:"Current point. Mortgage cleared. Turning 60.",2028:"Retirement assumption.",2032:"Possible major trip.",2035:"Possible cruise.",2036:"Milestone.",2046:"Milestone.",2051:"Assumed lifespan."
+1966:"Birth year.",
+1970:"School begins.",
+1976:"Double digits.",
+1981:"Early memories.",
+1984:"School complete.",
+1985:"First taste of independence.",
+1986:"Work begins.",
+1989:"Travel and freedom.",
+1991:"Life starts changing direction.",
+1995:"Major life moment.",
+1998:"Mortgage begins.",
+1999:"A difficult year.",
+2001:"Family grows.",
+2003:"Big personal goal.",
+2004:"Family grows again.",
+2006:"Forty.",
+2007:"Timmy arrives.",
+2010:"Bucket list completed.",
+2014:"Needed more space.",
+2015:"Larger family home.",
+2016:"Half a century.",
+2018:"Career step.",
+2021:"Goodbye Timmy.",
+2024:"Long-awaited trip.",
+2025:"A rare sporting joy.",
+2026:"Current point. Mortgage cleared. Turning 60.",
+2028:"Retirement assumption.",
+2032:"Possible major trip.",
+2035:"Possible cruise.",
+2036:"Milestone.",
+2046:"Milestone.",
+2051:"Assumed lifespan."
 };
 
 function header(){
@@ -165,9 +217,21 @@ function buildSam(){
       let cls = "future";
       let text = "";
 
-      if(year < 2026 || (year === 2026 && m < 6)) cls = "past";
-      if(year === 2026 && m === 6) cls = "now";
-      if(year > 2051 || (year === 2051 && m > 7)) cls = "unplanned";
+      if(year < 2026 || (year === 2026 && m < 6)){
+        cls = "past";
+      }else if(year < 2041){
+        cls = "future";
+      }else if(year <= 2051){
+        cls = "later";
+      }
+
+      if(year === 2026 && m === 6){
+        cls = "now";
+      }
+
+      if(year > 2051 || (year === 2051 && m > 7)){
+        cls = "unplanned";
+      }
 
       if(samEvents[key]){
         text = samEvents[key].text;
