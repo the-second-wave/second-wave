@@ -33,6 +33,11 @@ td{border:1px solid #ddd;height:38px;text-align:center;padding:3px}
 hr{margin:32px 0}
 input,select{padding:8px;margin:5px}
 .eventList{max-width:900px;margin:10px auto;text-align:left;background:white;border:1px solid #ddd;border-radius:8px;padding:12px}
+.eventRow{display:flex;align-items:center;gap:10px;padding:7px;border-bottom:1px solid #eee}
+.eventColour{width:18px;height:18px;border-radius:4px;display:inline-block}
+.eventDate{width:95px;font-weight:bold}
+.eventName{flex:1}
+.eventDelete{background:#eee;color:#222;padding:5px 8px}
 </style>
 </head>
 
@@ -340,8 +345,14 @@ function renderUserEvents(){
     html += "No custom events added yet.";
   }else{
     userEvents.forEach(function(e,i){
-      html += `${e.year} ${months[e.month-1]} — ${e.text} 
-      <button onclick="deleteUserEvent(${i})">Delete</button><br>`;
+      html += `
+        <div class="eventRow">
+          <span class="eventColour ${e.type}"></span>
+          <span class="eventDate">${months[e.month-1]} ${e.year}</span>
+          <span class="eventName">${e.text}</span>
+          <button class="eventDelete" onclick="deleteUserEvent(${i})">❌</button>
+        </div>
+      `;
     });
   }
 
