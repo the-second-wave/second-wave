@@ -2,16 +2,100 @@
 <html>
 
 <head>
+
 <title>Map Of Remaining Time</title>
+
+<style>
+
+body{
+font-family:Arial,Helvetica,sans-serif;
+max-width:1000px;
+margin:auto;
+padding:40px;
+background:#f5f5f5;
+}
+
+h1{
+text-align:center;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(12,1fr);
+gap:3px;
+margin-top:30px;
+}
+
+.box{
+
+height:35px;
+
+background:#d9d9d9;
+
+}
+
+
+.past{
+background:#bdbdbd;
+}
+
+.future{
+background:#b7e4c7;
+}
+
+.you{
+background:#ff595e;
+}
+
+</style>
+
 </head>
 
 <body>
 
 <h1>Map Of Remaining Time</h1>
 
-<p>Welcome to MRT.</p>
+<p align="center">
 
-<p>You are here.</p>
+Alex • Age 60 • Lifespan Assumption 85
+
+</p>
+
+
+<div class="grid">
+
+<div class="box past"></div>
+<div class="box past"></div>
+<div class="box past"></div>
+<div class="box past"></div>
+<div class="box past"></div>
+<div class="box past"></div>
+
+<div class="box you"></div>
+
+<div class="box future"></div>
+<div class="box future"></div>
+<div class="box future"></div>
+<div class="box future"></div>
+<div class="box future"></div>
+
+</div>
+
+
+<p>
+
+🩶 Past
+
+&nbsp;&nbsp;&nbsp;
+
+🟥 You are here
+
+&nbsp;&nbsp;&nbsp;
+
+🟩 Future
+
+</p>
+
 
 </body>
 
