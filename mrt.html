@@ -86,7 +86,6 @@ and amber years that may still be enjoyed, albeit often with greater limitations
 <button onclick="zoomMap('sam',-0.1)">− Zoom Out</button>
 <button onclick="resetMap('sam')">Reset</button>
 <button onclick="zoomMap('sam',0.1)">+ Zoom In</button>
-<button onclick="fitMap('sam')">Fit Whole Map</button>
 <button id="samNotesBtn" onclick="toggleNotes('sam')">Show Notes</button>
 </div>
 
@@ -158,15 +157,10 @@ Comment:
 
 <div class="controls">
 <button onclick="zoomMap('user',-0.1)">− Zoom Out</button>
-<div class="controls">
-<button onclick="downloadMRT()">
-📷 Download My MRT
-</button>
-</div>  
 <button onclick="resetMap('user')">Reset</button>
 <button onclick="zoomMap('user',0.1)">+ Zoom In</button>
-<button onclick="fitMap('user')">Fit My MRT</button>
 <button id="userNotesBtn" onclick="toggleNotes('user')">Show Notes</button>
+<button onclick="downloadMRT()">📷 Download MRT</button>
 </div>
 
 <div class="wrap" id="userWrap">
@@ -230,8 +224,8 @@ function zoomMap(which,amount){
 }
 
 function resetMap(which){
-  maps[which].zoom = 1;
-  applyZoom(which);
+  fitMap(which);
+}
 }
 
 function fitMap(which){
